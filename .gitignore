@@ -62,6 +62,7 @@ battery-report.html
 # Publish & deployment staging outputs
 src/bin/Publish/
 Publish/
+release/
 
 # NuGet Packages & cache
 *.nupkg
