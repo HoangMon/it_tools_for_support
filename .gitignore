@@ -1,0 +1,74 @@
+## ========================================================
+## Standard .gitignore for .NET / C# / Visual Studio
+## ========================================================
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+src/bin/
+src/obj/
+tests/bin/
+tests/obj/
+**/[Bb]in/
+**/[Oo]bj/
+
+# Visual Studio files
+.vs/
+*.user
+*.userprefs
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains Rider / ReSharper
+.idea/
+*.DotSettings.user
+_ReSharper*/
+
+# Test Results & Code Coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# Temporary files, caches, backups
+*.tmp
+*.bak
+*.swp
+*~
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+# Output test files & reports
+check-*.txt
+battery-report.html
+*.dmp
+
+# Publish & deployment staging outputs
+src/bin/Publish/
+Publish/
+
+# NuGet Packages & cache
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+project.lock.json
+project.assets.json
+*.nuget.props
+*.nuget.targets

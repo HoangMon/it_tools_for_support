@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Resources\app.ico</ApplicationIcon>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    
+    <!-- Assembly Metadata for Ernastie -->
+    <Title>Ernastie Support Tool</Title>
+    <Product>Ernastie - Cong cu cai dat va bao tri Windows</Product>
+    <Company>Ernastie</Company>
+    <Description>Ernastie - Cong cu ho tro IT, cai dat va bao tri Windows / WinPE (Full Features Unlocked)</Description>
+    <Version>2026.10.9.129</Version>
+    <FileVersion>2026.10.9.129</FileVersion>
+    <AssemblyVersion>2026.10.9.129</AssemblyVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Ernastie.Services" />
+  </ItemGroup>
+
+</Project>
