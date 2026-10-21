@@ -31,9 +31,8 @@
 ### 1. 📊 Bảng điều khiển phần cứng (Hardware Dashboard)
 - Giám sát thời gian thực: Tải CPU (%), xung nhịp, số nhân/luồng.
 - Theo dõi RAM: Dung lượng sử dụng, dung lượng tổng, biểu đồ phần trăm.
-- Nhận diện card màn hình (GPU): Hiển thị chính xác tên GPU và dung lượng **VRAM thực tế** (hỗ trợ NVIDIA RTX 30/40 series 8GB+ VRAM, AMD Radeon, Intel Arc).
+- Nhận diện card màn hình (GPU): Hiển thị chính xác (hỗ trợ NVIDIA RTX, AMD Radeon, Intel Arc).
 - Trạng thái phân vùng ổ đĩa: Dung lượng trống, tổng dung lượng và tỷ lệ chiếm dụng.
-- Giao diện **Dark Theme** hiện đại, tự động co giãn tối ưu chuẩn xác theo mọi độ phân giải màn hình và mức DPI Scaling (100% đến 4K).
 
 ### 2. 🧪 Bộ công cụ Chẩn đoán & Kiểm tra (Check - Test)
 - ⌨️ **Keyboard Tester**: Kiểm tra bàn phím trực quan thời gian thực, phát hiện phím liệt, kẹt phím, chập phím.
