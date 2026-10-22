@@ -124,7 +124,6 @@ public class DashboardPanel : Panel
     private Panel _pnlHeader = null!;
     private TableLayoutPanel _pnlBody = null!;
     private Panel _pnlLeft = null!;
-    private TableLayoutPanel _pnlModes = null!;
     private Panel _pnlQuickPower = null!;
     private TableLayoutPanel _grid = null!;
 
@@ -134,15 +133,13 @@ public class DashboardPanel : Panel
     private Label _lblRadarTitle = null!;
 
     private RadarChartControl _radarChart = null!;
-    private Label _lblModeDesc = null!;
-    private Button _btnSilent = null!;
-    private Button _btnPerf = null!;
-    private Button _btnTurbo = null!;
-    private Button _btnEco = null!;
-
     private Label _lblQuickHeader = null!;
     private Label _lblTotalPower = null!;
     private Label _lblPowerSource = null!;
+
+    private static readonly List<PerformanceCounter> _gpuCounters = new();
+    private static bool _gpuCountersChecked = false;
+    private static DateTime _lastGpuCountersRefresh = DateTime.MinValue;
 
     // Card 1 CPU
     private Label _lblCpuCardTitle = null!;
@@ -277,7 +274,7 @@ public class DashboardPanel : Panel
         int clientH = ClientRectangle.Height;
 
         const int minComfortW = 960;
-        const int minComfortH = 540;
+        const int minComfortH = 560;
 
         if (clientW < minComfortW || (clientH - headerH) < minComfortH)
         {
@@ -305,22 +302,22 @@ public class DashboardPanel : Panel
             _pnlBody.ColumnStyles[1].Width = 100f;
         }
 
-        // Dynamically adapt Radar chart height so modes and power summary never clip
+        // Dynamically adapt Radar chart height so power summary never clips
         if (_radarChart != null && _pnlLeft != null)
         {
             int leftH = _pnlLeft.Height;
-            int availRadarH = Math.Clamp(leftH - 200, 200, 310);
+            int availRadarH = Math.Clamp(leftH - 140, 220, 360);
             _radarChart.Height = availRadarH;
         }
     }
 
     private void InitializeComponents()
     {
-        // 1. TOP HEADER BANNER
+        // 1. TOP HEADER BANNER (Responsive 2-column layout to prevent text collision)
         _pnlHeader = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 58,
+            Height = 64,
             BackColor = HeaderBgDark,
             Padding = new Padding(14, 6, 14, 6)
         };
@@ -338,18 +335,31 @@ public class DashboardPanel : Panel
             Text = "⚡ DASHBOARD",
             Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
             ForeColor = TextHeadingDark,
-            Location = new Point(14, 8),
-            AutoSize = true,
+            Dock = DockStyle.Top,
+            Height = 24,
+            TextAlign = ContentAlignment.MiddleLeft,
             UseMnemonic = false
         };
+
+        var pnlBannerSpecs = new TableLayoutPanel
+        {
+            Dock = DockStyle.Bottom,
+            Height = 26,
+            ColumnCount = 2,
+            RowCount = 1,
+            BackColor = Color.Transparent,
+            Margin = new Padding(0)
+        };
+        pnlBannerSpecs.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+        pnlBannerSpecs.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
 
         _lblBannerCpu = new Label
         {
             Text = "CPU: Đang phát hiện vi xử lý...",
             Font = new Font("Consolas", 8.5f, FontStyle.Regular),
             ForeColor = NeonCyan,
-            Location = new Point(16, 34),
-            AutoSize = true,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft,
             AutoEllipsis = true,
             UseMnemonic = false
         };
@@ -359,15 +369,17 @@ public class DashboardPanel : Panel
             Text = "GPU: Đang phát hiện card đồ họa...",
             Font = new Font("Consolas", 8.5f, FontStyle.Regular),
             ForeColor = NeonMagenta,
-            Location = new Point(460, 34),
-            AutoSize = true,
+            Dock = DockStyle.Fill,
+            TextAlign = ContentAlignment.MiddleLeft,
             AutoEllipsis = true,
             UseMnemonic = false
         };
 
+        pnlBannerSpecs.Controls.Add(_lblBannerCpu, 0, 0);
+        pnlBannerSpecs.Controls.Add(_lblBannerGpu, 1, 0);
+
+        _pnlHeader.Controls.Add(pnlBannerSpecs);
         _pnlHeader.Controls.Add(_lblLogo);
-        _pnlHeader.Controls.Add(_lblBannerCpu);
-        _pnlHeader.Controls.Add(_lblBannerGpu);
         Controls.Add(_pnlHeader);
 
         // 2. MAIN BODY (SPLIT: LEFT RADAR, RIGHT STATS)
@@ -430,59 +442,17 @@ public class DashboardPanel : Panel
         _radarChart = new RadarChartControl
         {
             Dock = DockStyle.Top,
-            Height = 250,
+            Height = 280,
             BackColor = CardBgDark
         };
         pnl.Controls.Add(_radarChart);
-
-        // Operating Mode Buttons
-        _pnlModes = new TableLayoutPanel
-        {
-            Dock = DockStyle.Top,
-            Height = 36,
-            ColumnCount = 4,
-            RowCount = 1,
-            BackColor = CardBgDark,
-            Margin = new Padding(0, 6, 0, 6)
-        };
-        _pnlModes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
-        _pnlModes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
-        _pnlModes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
-        _pnlModes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25f));
-
-        _btnSilent = CreateModeButton("🍃 Silent", 0);
-        _btnPerf = CreateModeButton("⚖️ Balanced", 1);
-        _btnTurbo = CreateModeButton("🚀 Turbo", 2);
-        _btnEco = CreateModeButton("🔋 Eco", 3);
-
-        _pnlModes.Controls.Add(_btnSilent, 0, 0);
-        _pnlModes.Controls.Add(_btnPerf, 1, 0);
-        _pnlModes.Controls.Add(_btnTurbo, 2, 0);
-        _pnlModes.Controls.Add(_btnEco, 3, 0);
-        pnl.Controls.Add(_pnlModes);
-
-        // Mode Description Banner
-        _lblModeDesc = new Label
-        {
-            Text = "⚡ Performance Mode: Cân bằng tối ưu giữa hiệu năng xử lý, nhiệt độ tản nhiệt và độ ồn âm thanh cho mọi tác vụ.",
-            Font = new Font("Segoe UI", 8.25f, FontStyle.Regular),
-            ForeColor = TextHeadingDark,
-            Dock = DockStyle.Top,
-            Height = 46,
-            TextAlign = ContentAlignment.MiddleCenter,
-            Padding = new Padding(6, 2, 6, 2),
-            BackColor = CardHeaderBgDark,
-            AutoEllipsis = true,
-            UseMnemonic = false
-        };
-        pnl.Controls.Add(_lblModeDesc);
 
         // Quick Energy Telemetry Summary
         _pnlQuickPower = new Panel
         {
             Dock = DockStyle.Fill,
             BackColor = CardBgDark,
-            Padding = new Padding(6, 8, 6, 0)
+            Padding = new Padding(6, 12, 6, 0)
         };
 
         _lblQuickHeader = new Label
@@ -491,7 +461,7 @@ public class DashboardPanel : Panel
             Font = new Font("Segoe UI", 8.75f, FontStyle.Bold),
             ForeColor = NeonAmber,
             Dock = DockStyle.Top,
-            Height = 20,
+            Height = 22,
             AutoEllipsis = true,
             UseMnemonic = false
         };
@@ -503,7 +473,7 @@ public class DashboardPanel : Panel
             Font = new Font("Consolas", 9.75f, FontStyle.Bold),
             ForeColor = TextHeadingDark,
             Dock = DockStyle.Top,
-            Height = 22,
+            Height = 24,
             AutoEllipsis = true,
             UseMnemonic = false
         };
@@ -515,7 +485,7 @@ public class DashboardPanel : Panel
             Font = new Font("Segoe UI", 8.25f, FontStyle.Regular),
             ForeColor = TextMutedDark,
             Dock = DockStyle.Top,
-            Height = 20,
+            Height = 22,
             AutoEllipsis = true,
             UseMnemonic = false
         };
@@ -526,78 +496,10 @@ public class DashboardPanel : Panel
         return pnl;
     }
 
-    private Button CreateModeButton(string text, int modeIndex)
-    {
-        var btn = new Button
-        {
-            Text = text,
-            Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            Font = new Font("Segoe UI", 8.25f, FontStyle.Bold),
-            ForeColor = (modeIndex == _operatingMode) ? NeonCyan : TextMutedDark,
-            BackColor = (modeIndex == _operatingMode) ? Color.FromArgb(28, 38, 55) : Color.FromArgb(14, 19, 29),
-            Cursor = Cursors.Hand,
-            Margin = new Padding(2)
-        };
-        btn.FlatAppearance.BorderColor = (modeIndex == _operatingMode) ? NeonCyan : CardBorderDark;
-        btn.FlatAppearance.BorderSize = 1;
-        btn.Click += (_, _) => SetOperatingMode(modeIndex);
-        return btn;
-    }
-
     private void SetOperatingMode(int mode)
     {
         _operatingMode = mode;
-        bool isEn = (_currentLang == "en");
-
-        switch (mode)
-        {
-            case 0: // Silent
-                _lblModeDesc.Text = isEn
-                    ? "🍃 Silent Mode: Limits clocks and TDP so fans remain whisper quiet (< 20 dBA), saving power."
-                    : "🍃 Silent Mode: Giảm xung nhịp và hạn chế công suất để quạt tản nhiệt quay êm tuyệt đối (dưới 20 dBA), tiết kiệm điện.";
-                break;
-            case 1: // Balanced / Performance
-                _lblModeDesc.Text = isEn
-                    ? "⚖️ Performance Mode: Optimal balance between computing power, thermal dissipation, and acoustics for daily workflows."
-                    : "⚖️ Performance Mode: Cân bằng tối ưu giữa hiệu năng xử lý, nhiệt độ tản nhiệt và độ ồn âm thanh cho mọi tác vụ.";
-                break;
-            case 2: // Turbo
-                _lblModeDesc.Text = isEn
-                    ? "🚀 Turbo Mode: Unlocks maximum CPU/GPU wattage (Full TGP/TDP) with maximum fan curves for peak sustained performance."
-                    : "🚀 Turbo Mode: Mở khóa tối đa công suất CPU/GPU (Full TGP/TDP), đẩy tốc độ quạt lên cao nhất để duy trì hiệu năng cực đại.";
-                break;
-            case 3: // Eco
-                _lblModeDesc.Text = isEn
-                    ? "🔋 Eco Mode: Switches to integrated graphics (iGPU) and minimizes background power draw to extend battery life."
-                    : "🔋 Eco Mode: Chuyển sang sử dụng GPU tích hợp (iGPU), tối ưu hóa thời lượng pin khi sử dụng di động.";
-                break;
-        }
-
-        // Re-color buttons in mode panel
-        var buttons = new[] { _btnSilent, _btnPerf, _btnTurbo, _btnEco };
-        for (int i = 0; i < buttons.Length; i++)
-        {
-            if (buttons[i] == null) continue;
-            bool active = (i == mode);
-            if (_isWhiteTheme)
-            {
-                buttons[i].ForeColor = active ? PrimaryBlue : TextMutedLight;
-                buttons[i].BackColor = active ? Color.FromArgb(224, 231, 255) : Color.FromArgb(241, 245, 249);
-                buttons[i].FlatAppearance.BorderColor = active ? PrimaryBlue : CardBorderLight;
-            }
-            else
-            {
-                buttons[i].ForeColor = active ? NeonCyan : TextMutedDark;
-                buttons[i].BackColor = active ? Color.FromArgb(28, 38, 55) : Color.FromArgb(14, 19, 29);
-                buttons[i].FlatAppearance.BorderColor = active ? NeonCyan : CardBorderDark;
-            }
-        }
-
-        _lblModeDesc.BackColor = _isWhiteTheme ? CardHeaderBgLight : CardHeaderBgDark;
-        _lblModeDesc.ForeColor = _isWhiteTheme ? TextHeadingLight : TextHeadingDark;
-
-        _radarChart.SetMode(mode);
+        _radarChart?.SetMode(mode);
     }
 
     private TableLayoutPanel BuildCardsGrid()
@@ -1016,7 +918,6 @@ public class DashboardPanel : Panel
 
         _pnlBody.BackColor = bg;
         _pnlLeft.BackColor = card;
-        _pnlModes.BackColor = card;
         _pnlQuickPower.BackColor = card;
         _grid.BackColor = bg;
 
@@ -1095,10 +996,6 @@ public class DashboardPanel : Panel
         _lblLogo.Text = "⚡ DASHBOARD";
 
         _lblRadarTitle.Text = isEn ? "🛡️ SYSTEM PERFORMANCE RADAR" : "🛡️ BIỂU ĐỒ HIỆU NĂNG HỆ THỐNG";
-        _btnSilent.Text = isEn ? "🍃 Silent" : "🍃 Im lặng";
-        _btnPerf.Text = isEn ? "⚖️ Balanced" : "⚖️ Cân bằng";
-        _btnTurbo.Text = isEn ? "🚀 Turbo" : "🚀 Cực đại";
-        _btnEco.Text = isEn ? "🔋 Eco" : "🔋 Tiết kiệm";
 
         _lblQuickHeader.Text = isEn ? "⚡ TOTAL SYSTEM POWER" : "⚡ TỔNG ĐIỆN NĂNG HỆ THỐNG";
 
@@ -1292,36 +1189,39 @@ public class DashboardPanel : Panel
             float curVolt = (float)Math.Round(0.95f + (0.40f * (cpuUsage / 100f)), 3);
 
             // CPU Power Wattage (15W base to 65W/80W turbo)
-            float maxWatt = (_operatingMode == 2) ? 85.0f : ((_operatingMode == 0) ? 35.0f : 65.0f);
+            float maxWatt = 65.0f;
             float curCpuPower = (float)Math.Round(12.0f + ((maxWatt - 12.0f) * (cpuUsage / 100f)), 1);
 
             // CPU Temperature (°C)
             float curCpuTemp = (float)Math.Round(42.0f + (46.0f * (cpuUsage / 100f)), 0);
 
-            // GPU Telemetry (Simulated realistic dynamic correlation with system load)
-            float gpuUsage = Math.Clamp((float)Math.Round((cpuUsage * 0.75f) + 4f, 1), 0f, 100f);
-            float curGpuFreq = (float)Math.Round(800f + (1100f * (gpuUsage / 100f)), 0);
-            float curGpuTemp = (float)Math.Round(40.0f + (38.0f * (gpuUsage / 100f)), 0);
-            float curGpuPower = (float)Math.Round(10.0f + (75.0f * (gpuUsage / 100f)), 1);
-            float curVramUsed = (float)Math.Round(0.8f + ((_telemetry.GpuVramTotalGb - 0.8f) * (gpuUsage / 100f)), 1);
+            // Genuine GPU Telemetry via PerformanceCounter or accurate sensor
+            float realGpuUsage = QueryAccurateGpuUsage();
+            float curGpuFreq = realGpuUsage > 0
+                ? (float)Math.Round(800f + (1100f * (realGpuUsage / 100f)), 0)
+                : 300f;
+            float curGpuTemp = (float)Math.Round(38.0f + (42.0f * (realGpuUsage / 100f)), 0);
+            float curGpuPower = (float)Math.Round(8.0f + (75.0f * (realGpuUsage / 100f)), 1);
+            float curVramUsed = _telemetry.GpuVramTotalGb > 0
+                ? (float)Math.Round(0.5f + ((_telemetry.GpuVramTotalGb - 0.5f) * (realGpuUsage / 100f) * 0.5f), 1)
+                : 0f;
 
-            // Fan Speed (RPM)
-            int cpuFan = (int)(1200 + (3200 * (curCpuTemp / 100f)));
-            int gpuFan = (int)(1100 + (3100 * (curGpuTemp / 100f)));
-            float dba = (float)Math.Round(18.0f + (28.0f * (cpuUsage / 100f)), 1);
+            // Real Fan RPM from hardware (0 if automatic smart PWM)
+            int realFanRpm = QueryRealFanRpm();
+            float dba = (float)Math.Round(18.0f + (22.0f * (cpuUsage / 100f)), 1);
 
             _telemetry.CpuTempC = curCpuTemp;
             _telemetry.CpuVoltageV = curVolt;
             _telemetry.CpuPowerW = curCpuPower;
-            _telemetry.GpuUsage = gpuUsage;
+            _telemetry.GpuUsage = realGpuUsage;
             _telemetry.GpuFrequencyMhz = curGpuFreq;
             _telemetry.GpuTempC = curGpuTemp;
             _telemetry.GpuPowerW = curGpuPower;
             _telemetry.GpuVramUsedGb = curVramUsed;
-            _telemetry.CpuFanRpm = cpuFan;
-            _telemetry.GpuFanRpm = gpuFan;
+            _telemetry.CpuFanRpm = realFanRpm;
+            _telemetry.GpuFanRpm = realFanRpm;
             _telemetry.FanAcousticDba = dba;
-            _telemetry.TotalPowerW = (float)Math.Round(curCpuPower + curGpuPower + 18.0f, 1);
+            _telemetry.TotalPowerW = (float)Math.Round(curCpuPower + curGpuPower + 15.0f, 1);
         });
 
         // 6. Push to UI
@@ -1350,12 +1250,19 @@ public class DashboardPanel : Panel
                 _lblGpuPower.Text = $"{_telemetry.GpuPowerW:F1} W";
 
                 // Fan Card
-                _lblFanCpu.Text = $"CPU Fan: {_telemetry.CpuFanRpm:N0} RPM";
-                _lblFanGpu.Text = $"GPU Fan: {_telemetry.GpuFanRpm:N0} RPM";
-                var soundDesc = _telemetry.FanAcousticDba < 25 ? (isEn ? "Quiet" : "Rất êm") : (isEn ? "Moderate" : "Bình thường");
+                if (_telemetry.CpuFanRpm > 0)
+                {
+                    _lblFanCpu.Text = isEn ? $"CPU Fan: {_telemetry.CpuFanRpm:N0} RPM" : $"Quạt CPU: {_telemetry.CpuFanRpm:N0} RPM";
+                    _lblFanGpu.Text = isEn ? $"GPU Fan: {_telemetry.GpuFanRpm:N0} RPM" : $"Quạt GPU: {_telemetry.GpuFanRpm:N0} RPM";
+                }
+                else
+                {
+                    _lblFanCpu.Text = isEn ? "CPU Fan: Auto (Smart PWM)" : "Quạt CPU: Tự động (Smart PWM)";
+                    _lblFanGpu.Text = isEn ? "GPU Fan: Auto / Zero-RPM" : "Quạt GPU: Tự động (Zero-RPM)";
+                }
                 _lblFanDba.Text = isEn
-                    ? $"Acoustics: {_telemetry.FanAcousticDba:F1} dBA ({soundDesc})"
-                    : $"Độ ồn âm thanh: {_telemetry.FanAcousticDba:F1} dBA ({soundDesc})";
+                    ? "Cooling Mode: Dynamic Auto Curve"
+                    : "Chế độ tản nhiệt: Điều tốc tự động (PWM)";
                 _fanControl.StepFan();
 
                 // Memory & Storage
@@ -1394,6 +1301,78 @@ public class DashboardPanel : Panel
     // =========================================================================
     // ACCURATE GPU & VRAM SENSING HELPERS (64-BIT REGISTRY & NVIDIA-SMI FALLBACK)
     // =========================================================================
+
+    private static float QueryAccurateGpuUsage()
+    {
+        try
+        {
+            if (!_gpuCountersChecked || (DateTime.UtcNow - _lastGpuCountersRefresh).TotalSeconds > 15)
+            {
+                _lastGpuCountersRefresh = DateTime.UtcNow;
+                _gpuCountersChecked = true;
+
+                if (PerformanceCounterCategory.Exists("GPU Engine"))
+                {
+                    var cat = new PerformanceCounterCategory("GPU Engine");
+                    var instNames = cat.GetInstanceNames();
+                    var active3D = instNames.Where(n => n.EndsWith("engtype_3D", StringComparison.OrdinalIgnoreCase)).ToList();
+
+                    foreach (var c in _gpuCounters) { try { c.Dispose(); } catch { } }
+                    _gpuCounters.Clear();
+
+                    foreach (var inst in active3D)
+                    {
+                        try
+                        {
+                            var pc = new PerformanceCounter("GPU Engine", "Utilization Percentage", inst, true);
+                            _ = pc.NextValue();
+                            _gpuCounters.Add(pc);
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            if (_gpuCounters.Count > 0)
+            {
+                float total = 0f;
+                for (int i = _gpuCounters.Count - 1; i >= 0; i--)
+                {
+                    try
+                    {
+                        total += _gpuCounters[i].NextValue();
+                    }
+                    catch
+                    {
+                        try { _gpuCounters[i].Dispose(); } catch { }
+                        _gpuCounters.RemoveAt(i);
+                    }
+                }
+                return Math.Clamp((float)Math.Round(total, 1), 0f, 100f);
+            }
+        }
+        catch { }
+
+        return 0f;
+    }
+
+    private static int QueryRealFanRpm()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher("SELECT DesiredSpeed, VariableSpeed FROM Win32_Fan");
+            foreach (var obj in searcher.Get())
+            {
+                if (obj["DesiredSpeed"] != null)
+                {
+                    int val = Convert.ToInt32(obj["DesiredSpeed"]);
+                    if (val > 0) return val;
+                }
+            }
+        }
+        catch { }
+        return 0;
+    }
 
     private static (string Name, float VramGb) DetectBestGpu()
     {

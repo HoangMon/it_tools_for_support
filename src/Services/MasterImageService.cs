@@ -221,19 +221,21 @@ public class MasterImageService
 
     public void FixSysprepErrors(Action<string> log)
     {
-        log("[1/5] Kiểm tra dịch vụ Windows Media Player Network Sharing...");
+        log("[1/6] Kiểm tra và tạm dừng các dịch vụ xung đột Sysprep (WMP, Windows Update, BITS)...");
         try
         {
             RunProcessHidden("sc.exe", "stop WMPNetworkSvc");
             RunProcessHidden("sc.exe", "config WMPNetworkSvc start= disabled");
-            log("  -> Đã dừng và vô hiệu hóa WMPNetworkSvc thành công.");
+            RunProcessHidden("sc.exe", "stop wuauserv");
+            RunProcessHidden("sc.exe", "stop bits");
+            log("  -> Đã tạm dừng các dịch vụ xung đột thành công.");
         }
         catch (Exception ex)
         {
-            log($"  -> WMPNetworkSvc: {ex.Message}");
+            log($"  -> Dịch vụ: {ex.Message}");
         }
 
-        log("[2/5] Kiểm tra và tắt BitLocker bảo vệ ổ đĩa C:...");
+        log("[2/6] Kiểm tra và tắt BitLocker bảo vệ ổ đĩa C:...");
         try
         {
             RunProcessHidden("manage-bde.exe", "-off C:");
@@ -244,7 +246,7 @@ public class MasterImageService
             log($"  -> BitLocker: {ex.Message}");
         }
 
-        log("[3/5] Khắc phục cờ trạng thái Registry Sysprep (GeneralizationState & CleanUpState)...");
+        log("[3/6] Khắc phục cờ trạng thái Registry Sysprep (GeneralizationState & CleanUpState)...");
         try
         {
             using var keyStatus = Registry.LocalMachine.CreateSubKey(@"SYSTEM\Setup\Status\SysprepStatus");
@@ -261,14 +263,14 @@ public class MasterImageService
             log($"  -> Lỗi Registry: {ex.Message}");
         }
 
-        log("[4/5] Gỡ bỏ các Appx UWP Package người dùng khác (Staged) gây lỗi Sysprep 0x80073cf2...");
+        log("[4/6] Gỡ bỏ các Appx UWP Package người dùng khác (Staged) gây lỗi Sysprep 0x80073cf2...");
         try
         {
             var psScript = @"
 Get-AppxPackage -AllUsers | Where-Object { $_.PackageUserInformation -match 'Staged' -or $_.NonRemovable -ne $true } | ForEach-Object {
     try { Remove-AppxPackage -Package $_.PackageFullName -AllUsers -ErrorAction SilentlyContinue } catch {}
 }
-$badApps = @('*XboxApp*', '*BingWeather*', '*GetHelp*', '*SolitaireCollection*', '*ZuneVideo*', '*ZuneMusic*')
+$badApps = @('*XboxApp*', '*BingWeather*', '*GetHelp*', '*SolitaireCollection*', '*ZuneVideo*', '*ZuneMusic*', '*MicrosoftEdgeDevTools*')
 foreach ($b in $badApps) {
     Get-AppxPackage -AllUsers -Name $b | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
     Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $b | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
@@ -282,7 +284,11 @@ foreach ($b in $badApps) {
             log($"  -> Gỡ Appx: {ex.Message}");
         }
 
-        log("[5/5] Xóa bộ nhớ đệm log lỗi Sysprep cũ (Panther setupact.log)...");
+        log("[5/6] Tạo tệp cấu hình mẫu unattend.xml (CopyProfile = true để lưu cấu hình Desktop)...");
+        EnsureSysprepUnattendXml();
+        log("  -> Đã tạo tệp cấu hình Sysprep unattend.xml thành công.");
+
+        log("[6/6] Xóa bộ nhớ đệm log lỗi Sysprep cũ (Panther setupact.log)...");
         try
         {
             var panther = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32", "Sysprep", "Panther");
@@ -300,7 +306,48 @@ foreach ($b in $badApps) {
             log($"  -> Log Panther: {ex.Message}");
         }
 
-        log("✅ [HOÀN TẤT] Đã sửa xong toàn bộ các lỗi Sysprep phổ biến! Bạn có thể chạy lại Bước 1.");
+        log("✅ [HOÀN TẤT] Đã sửa xong toàn bộ các lỗi Sysprep phổ biến và sẵn sàng tạo Master Image!");
+    }
+
+    public string EnsureSysprepUnattendXml()
+    {
+        var sysprepDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32", "Sysprep");
+        if (!Directory.Exists(sysprepDir)) Directory.CreateDirectory(sysprepDir);
+        var unattendPath = Path.Combine(sysprepDir, "unattend.xml");
+        string xml = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<unattend xmlns=""urn:schemas-microsoft-com:unattend"">
+    <settings pass=""generalize"">
+        <component name=""Microsoft-Windows-Security-SPP"" processorArchitecture=""amd64"" publicKeyToken=""31bf3856ad364e35"" language=""neutral"" versionScope=""nonSxS"" xmlns:wcm=""http://schemas.microsoft.com/WMIConfig/2002/State"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+            <SkipRearm>1</SkipRearm>
+        </component>
+    </settings>
+    <settings pass=""specialize"">
+        <component name=""Microsoft-Windows-Shell-Setup"" processorArchitecture=""amd64"" publicKeyToken=""31bf3856ad364e35"" language=""neutral"" versionScope=""nonSxS"" xmlns:wcm=""http://schemas.microsoft.com/WMIConfig/2002/State"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+            <CopyProfile>true</CopyProfile>
+        </component>
+    </settings>
+</unattend>";
+        try
+        {
+            File.WriteAllText(unattendPath, xml);
+        }
+        catch { }
+        return unattendPath;
+    }
+
+    public string? GetSysprepFailureReason()
+    {
+        try
+        {
+            var pantherErr = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "System32", "Sysprep", "Panther", "setuperr.log");
+            if (File.Exists(pantherErr))
+            {
+                var content = File.ReadAllText(pantherErr);
+                if (!string.IsNullOrWhiteSpace(content)) return content.Trim();
+            }
+        }
+        catch { }
+        return null;
     }
 
     public void RunSysprep(string action, Action<string> log)
@@ -311,14 +358,20 @@ foreach ($b in $badApps) {
             throw new FileNotFoundException("Không tìm thấy tệp sysprep.exe trong hệ thống!", sysprepExe);
         }
 
-        string args = action.ToLowerInvariant() switch
+        log("Tự động chuẩn bị tiền điều kiện và cấu hình unattend.xml...");
+        FixSysprepErrors(log);
+        var unattend = EnsureSysprepUnattendXml();
+
+        string actionArg = action.ToLowerInvariant() switch
         {
-            "shutdown" => "/oobe /generalize /shutdown",
-            "quit" => "/oobe /generalize /quit",
-            _ => "/oobe /generalize /reboot"
+            "shutdown" => "/shutdown",
+            "quit" => "/quit",
+            _ => "/reboot"
         };
 
-        log($"Đang khởi chạy Sysprep với tham số: {args}");
+        string args = $"/oobe /generalize /unattend:\"{unattend}\" {actionArg}";
+        log($"Đang khởi chạy Sysprep chuẩn hóa ảnh hệ thống: {args}");
+
         Process.Start(new ProcessStartInfo(sysprepExe, args)
         {
             UseShellExecute = true,
@@ -580,12 +633,22 @@ $isoStream.Close()
 
     private void RunPowerShell(string script)
     {
-        var psi = new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -Command \"{script}\"")
+        var tempPs1 = Path.Combine(Path.GetTempPath(), $"sysprep_fix_{Guid.NewGuid():N}.ps1");
+        try
         {
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
-        using var p = Process.Start(psi);
-        p?.WaitForExit();
+            File.WriteAllText(tempPs1, script);
+            var psi = new ProcessStartInfo("powershell.exe", $"-NoProfile -ExecutionPolicy Bypass -File \"{tempPs1}\"")
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var p = Process.Start(psi);
+            p?.WaitForExit();
+        }
+        catch { }
+        finally
+        {
+            try { if (File.Exists(tempPs1)) File.Delete(tempPs1); } catch { }
+        }
     }
 }

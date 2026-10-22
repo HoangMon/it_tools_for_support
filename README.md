@@ -1,7 +1,7 @@
 # 🛠️ Ernastie - IT Tools for Support
 
 <p align="center">
-  <img src="src/Resources/app.ico" alt="Ernastie Logo" width="96" height="96" />
+  <img src="src/Resources/app.png" alt="Ernastie Crafting Table Logo" width="128" height="128" />
 </p>
 
 <p align="center">

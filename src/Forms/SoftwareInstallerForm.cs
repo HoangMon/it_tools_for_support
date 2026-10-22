@@ -38,6 +38,7 @@ public class SoftwareInstallerForm : Form
     private ProgressBar _progressBar = null!;
     private RichTextBox _rtbLog = null!;
     private DataGridView _dgvSelectedList = null!;
+    private Button _btnWingetStatus = null!;
 
     public SoftwareInstallerForm()
     {
@@ -143,6 +144,46 @@ public class SoftwareInstallerForm : Form
             AutoSize = true
         };
 
+        bool hasWinget = SoftwareInstallService.Instance.IsWingetAvailable();
+        _btnWingetStatus = new Button
+        {
+            Text = hasWinget ? "✅ Winget: Sẵn sàng" : "⚡ Cài Winget (Win Lite)",
+            Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
+            ForeColor = hasWinget ? ThemeHelper.SuccessGreen : Color.FromArgb(217, 119, 6),
+            BackColor = ThemeHelper.BtnBg,
+            FlatStyle = FlatStyle.Flat,
+            Size = new Size(165, 26),
+            Location = new Point(220, 3),
+            Cursor = Cursors.Hand
+        };
+        _btnWingetStatus.FlatAppearance.BorderColor = hasWinget ? ThemeHelper.SuccessGreen : Color.FromArgb(217, 119, 6);
+        _btnWingetStatus.Click += async (_, _) =>
+        {
+            if (SoftwareInstallService.Instance.IsWingetAvailable())
+            {
+                MessageBox.Show("Môi trường Winget CLI đã sẵn sàng trên hệ thống của bạn!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            _btnWingetStatus.Enabled = false;
+            _btnWingetStatus.Text = "⏳ Đang cài Winget...";
+            bool ok = await SoftwareInstallService.Instance.InstallWingetEnvironmentAsync(Log, pct => { try { Invoke(() => _progressBar.Value = pct); } catch { } });
+            _btnWingetStatus.Enabled = true;
+            if (ok)
+            {
+                _btnWingetStatus.Text = "✅ Winget: Sẵn sàng";
+                _btnWingetStatus.ForeColor = ThemeHelper.SuccessGreen;
+                _btnWingetStatus.FlatAppearance.BorderColor = ThemeHelper.SuccessGreen;
+                MessageBox.Show("Đã cài đặt môi trường Winget thành công!", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                _btnWingetStatus.Text = "⚡ Dùng Direct Fallback";
+                _btnWingetStatus.ForeColor = Color.FromArgb(37, 99, 235);
+                _btnWingetStatus.FlatAppearance.BorderColor = Color.FromArgb(37, 99, 235);
+                MessageBox.Show("Windows Lite không hỗ trợ AppX Service. Ứng dụng đã kích hoạt cơ chế Tải & Cài đặt trực tiếp (Direct Fallback) an toàn!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        };
+
         var lblUser = new Label
         {
             Text = "👤 Cài cho",
@@ -164,6 +205,7 @@ public class SoftwareInstallerForm : Form
         };
 
         pnl.Controls.Add(lblTitle);
+        pnl.Controls.Add(_btnWingetStatus);
         pnl.Controls.Add(lblUser);
         pnl.Controls.Add(_cboUserAccount);
 
@@ -862,7 +904,7 @@ public class SoftwareInstallerForm : Form
 
         _progressBar.Value = 0;
 
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
             foreach (var app in selectedApps)
             {
@@ -882,52 +924,83 @@ public class SoftwareInstallerForm : Form
                 Log($"────────────────────────────────────────────────────────────");
                 Log($"⏳ [{current}/{total}] Bắt đầu cài đặt: {app.Name} (ID: {app.WingetId})...");
 
-                try
+                var wingetExe = SoftwareInstallService.Instance.FindWingetPath();
+                bool installed = false;
+
+                if (!string.IsNullOrEmpty(wingetExe))
                 {
-                    var psi = new ProcessStartInfo("winget.exe", $"install --id \"{app.WingetId}\" -e --silent --accept-package-agreements --accept-source-agreements")
+                    try
                     {
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
-
-                    using var proc = Process.Start(psi)!;
-                    proc.OutputDataReceived += (_, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data)) Log($"  {e.Data}");
-                    };
-                    proc.ErrorDataReceived += (_, e) =>
-                    {
-                        if (!string.IsNullOrWhiteSpace(e.Data)) Log($"  [Lỗi] {e.Data}");
-                    };
-
-                    proc.BeginOutputReadLine();
-                    proc.BeginErrorReadLine();
-
-                    while (!proc.WaitForExit(500))
-                    {
-                        if (ct.IsCancellationRequested)
+                        var psi = new ProcessStartInfo(wingetExe, $"install --id \"{app.WingetId}\" -e --silent --accept-package-agreements --accept-source-agreements")
                         {
-                            try { proc.Kill(); } catch { }
-                            break;
-                        }
-                        _pauseEvent.Wait();
-                    }
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true
+                        };
 
-                    if (!ct.IsCancellationRequested && (proc.ExitCode == 0 || proc.ExitCode == 3010))
-                    {
-                        success++;
-                        Log($"✅ Cài đặt thành công: {app.Name}");
+                        using var proc = Process.Start(psi)!;
+                        proc.OutputDataReceived += (_, e) =>
+                        {
+                            if (!string.IsNullOrWhiteSpace(e.Data)) Log($"  {e.Data}");
+                        };
+                        proc.ErrorDataReceived += (_, e) =>
+                        {
+                            if (!string.IsNullOrWhiteSpace(e.Data)) Log($"  [Lỗi] {e.Data}");
+                        };
+
+                        proc.BeginOutputReadLine();
+                        proc.BeginErrorReadLine();
+
+                        while (!proc.WaitForExit(500))
+                        {
+                            if (ct.IsCancellationRequested)
+                            {
+                                try { proc.Kill(); } catch { }
+                                break;
+                            }
+                            _pauseEvent.Wait();
+                        }
+
+                        if (!ct.IsCancellationRequested && (proc.ExitCode == 0 || proc.ExitCode == 3010))
+                        {
+                            success++;
+                            installed = true;
+                            Log($"✅ Cài đặt thành công qua Winget: {app.Name}");
+                        }
+                        else if (!ct.IsCancellationRequested)
+                        {
+                            Log($"⚠️ Winget hoàn tất với mã thoát: {proc.ExitCode}. Đang chuyển sang Direct Fallback...");
+                        }
                     }
-                    else if (!ct.IsCancellationRequested)
+                    catch (Exception ex)
                     {
-                        Log($"⚠️ Cài đặt {app.Name} hoàn tất với mã thoát: {proc.ExitCode}");
+                        Log($"⚠️ Winget gặp lỗi: {ex.Message}. Đang thử tải cài đặt trực tiếp...");
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    Log($"❌ Lỗi thực thi {app.Name}: {ex.Message}");
+                    Log($"ℹ️ Windows Lite / Windows 10 không có Winget. Chuyển sang cơ chế tải & cài đặt trực tiếp (Direct Fallback)...");
+                }
+
+                if (!installed && !ct.IsCancellationRequested)
+                {
+                    bool directOk = await SoftwareInstallService.Instance.InstallAppDirectFallbackAsync(
+                        app.Name,
+                        app.WingetId,
+                        Log,
+                        p => { try { Invoke(() => _progressBar.Value = Math.Clamp(p, 0, 100)); } catch { } },
+                        ct);
+
+                    if (directOk)
+                    {
+                        success++;
+                        installed = true;
+                    }
+                    else
+                    {
+                        Log($"❌ Không thể cài đặt {app.Name}.");
+                    }
                 }
             }
         }, ct);

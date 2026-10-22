@@ -63,12 +63,44 @@ public static class ThemeHelper
         };
     }
 
+    private static Icon? _appIcon;
+    public static Icon AppIcon
+    {
+        get
+        {
+            if (_appIcon != null) return _appIcon;
+            try
+            {
+                var iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "app.ico");
+                if (System.IO.File.Exists(iconPath))
+                {
+                    _appIcon = new Icon(iconPath);
+                    return _appIcon;
+                }
+                var exePath = Application.ExecutablePath;
+                if (System.IO.File.Exists(exePath))
+                {
+                    _appIcon = Icon.ExtractAssociatedIcon(exePath);
+                    if (_appIcon != null) return _appIcon;
+                }
+            }
+            catch { }
+            return SystemIcons.Application;
+        }
+    }
+
     /// <summary>
     /// Traverses and styles all controls inside the form according to the active theme.
     /// </summary>
     public static void ApplyThemeInternal(Form form)
     {
         if (form == null || form.IsDisposed) return;
+
+        try
+        {
+            form.Icon = AppIcon;
+        }
+        catch { }
 
         bool dark = IsDark;
         Color bg = BgForm;

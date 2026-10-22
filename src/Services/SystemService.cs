@@ -308,8 +308,19 @@ public class SystemService
         catch { }
     }
 
+    public bool IsWindows11OrGreater()
+    {
+        return Environment.OSVersion.Version.Build >= 22000;
+    }
+
     public bool IsWin10ContextMenuActive()
     {
+        // Trên Windows 10 hoặc cũ hơn, hệ thống luôn mặc định là menu chuột phải cổ điển
+        if (!IsWindows11OrGreater())
+        {
+            return true;
+        }
+
         try
         {
             using var key = Registry.CurrentUser.OpenSubKey(@"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}");
@@ -389,18 +400,130 @@ public class SystemService
         catch { }
     }
 
-    public void ResetPrintSpooler()
+    [DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+    private static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+
+    public bool ResetPrintSpooler(Action<string>? log = null)
     {
         try
         {
-            Process.Start(new ProcessStartInfo
+            log?.Invoke("Đang dừng dịch vụ Print Spooler...");
+            var p1 = Process.Start(new ProcessStartInfo("cmd.exe", "/c net stop spooler") { CreateNoWindow = true, UseShellExecute = false });
+            p1?.WaitForExit(10000);
+
+            log?.Invoke("Đang dọn dẹp hàng đợi in trong %systemroot%\\System32\\Spool\\Printers...");
+            string spoolDir = Path.Combine(Environment.SystemDirectory, @"spool\PRINTERS");
+            int deleted = 0;
+            if (Directory.Exists(spoolDir))
             {
-                FileName = "cmd.exe",
-                Arguments = "/c net stop spooler && del /Q /F /S \"%systemroot%\\System32\\Spool\\Printers\\*.*\" && net start spooler",
-                UseShellExecute = true
-            });
+                foreach (var f in Directory.GetFiles(spoolDir, "*.*"))
+                {
+                    try { File.Delete(f); deleted++; } catch { }
+                }
+            }
+            log?.Invoke($"Đã xóa {deleted} tệp kẹt lệnh in.");
+
+            log?.Invoke("Đang khởi động lại dịch vụ Print Spooler...");
+            var p2 = Process.Start(new ProcessStartInfo("cmd.exe", "/c sc config spooler start= auto && net start spooler") { CreateNoWindow = true, UseShellExecute = false });
+            p2?.WaitForExit(10000);
+
+            log?.Invoke("✅ Đã khởi động lại dịch vụ máy in (Print Spooler) thành công!");
+            return true;
         }
-        catch { }
+        catch (Exception ex)
+        {
+            log?.Invoke($"[Lỗi xử lý máy in]: {ex.Message}");
+            return false;
+        }
+    }
+
+    public bool FixCompressedFileAssociations(Action<string>? log = null)
+    {
+        try
+        {
+            log?.Invoke("Đang khôi phục liên kết mặc định cho file nén (.zip)...");
+            using (var key = Registry.ClassesRoot.CreateSubKey(".zip"))
+            {
+                key?.SetValue("", "CompressedFolder");
+                key?.SetValue("Content Type", "application/x-zip-compressed");
+            }
+            using (var key = Registry.ClassesRoot.CreateSubKey(@"CompressedFolder\Shell\Open\Command"))
+            {
+                key?.SetValue("", @"%SystemRoot%\Explorer.exe /idlist,%I,%L");
+            }
+
+            try
+            {
+                Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.zip\UserChoice", false);
+            }
+            catch { }
+
+            string p7z = @"C:\Program Files\7-Zip\7zFM.exe";
+            string pRar = @"C:\Program Files\WinRAR\WinRAR.exe";
+            if (File.Exists(p7z))
+            {
+                log?.Invoke($"Phát hiện 7-Zip tại {p7z}. Đăng ký xử lý .7z...");
+                using var k7 = Registry.ClassesRoot.CreateSubKey(".7z");
+                k7?.SetValue("", "7-Zip.7z");
+            }
+            if (File.Exists(pRar))
+            {
+                log?.Invoke($"Phát hiện WinRAR tại {pRar}. Đăng ký xử lý .rar...");
+                using var kR = Registry.ClassesRoot.CreateSubKey(".rar");
+                kR?.SetValue("", "WinRAR");
+            }
+
+            SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
+            log?.Invoke("✅ Đã khôi phục liên kết tệp nén thành công!");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            log?.Invoke($"[Lỗi khôi phục liên kết]: {ex.Message}");
+            return false;
+        }
+    }
+
+    public string GetWindowsEditionsInfo()
+    {
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = "dism.exe",
+                Arguments = "/online /get-currentedition",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var p = Process.Start(psi);
+            if (p != null)
+            {
+                string outCurrent = p.StandardOutput.ReadToEnd();
+                p.WaitForExit(10000);
+
+                var psiTarget = new ProcessStartInfo
+                {
+                    FileName = "dism.exe",
+                    Arguments = "/online /get-targeteditions",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                using var p2 = Process.Start(psiTarget);
+                string outTarget = p2 != null ? p2.StandardOutput.ReadToEnd() : "";
+                p2?.WaitForExit(10000);
+
+                return $"=== THÔNG TIN PHIÊN BẢN WINDOWS HIỆN TẠI ===\n{outCurrent}\n=== CÁC PHIÊN BẢN CÓ THỂ NÂNG CẤP TRỰC TIẾP ===\n{outTarget}";
+            }
+        }
+        catch (Exception ex)
+        {
+            return $"Lỗi truy vấn DISM: {ex.Message}";
+        }
+        return "Không thể truy vấn thông tin phiên bản Windows qua DISM.";
     }
 
     private bool CheckIfWinPE()
@@ -458,5 +581,25 @@ public class SystemService
             CreateNoWindow = true,
             UseShellExecute = false
         });
+    }
+
+    public string GetActiveMacAddress()
+    {
+        try
+        {
+            var nic = System.Net.NetworkInformation.NetworkInterface.GetAllNetworkInterfaces()
+                .FirstOrDefault(n => n.OperationalStatus == System.Net.NetworkInformation.OperationalStatus.Up &&
+                                     n.NetworkInterfaceType != System.Net.NetworkInformation.NetworkInterfaceType.Loopback);
+            if (nic != null)
+            {
+                var bytes = nic.GetPhysicalAddress().GetAddressBytes();
+                if (bytes.Length > 0)
+                {
+                    return string.Join(":", bytes.Select(b => b.ToString("X2")));
+                }
+            }
+        }
+        catch { }
+        return "N/A";
     }
 }

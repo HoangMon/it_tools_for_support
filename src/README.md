@@ -1,5 +1,9 @@
 # Ernastie Support Tool (C# .NET 8 WinForms)
 
+<p align="center">
+  <img src="Resources/app.png" alt="Ernastie Crafting Table Logo" width="112" height="112" />
+</p>
+
 Công cụ hỗ trợ IT, cài đặt và bảo trì Windows / WinPE chuyên nghiệp, hiện đại, nhẹ và đầy đủ 100% tính năng của tool gốc, khắc phục hoàn toàn lỗi cảnh báo virus nhầm (`Wacatac.B!ml`).
 
 ---

@@ -261,12 +261,18 @@ public class WinPeService
             log?.Invoke("Tối ưu hóa hệ thống để mở khóa giới hạn co ổ đĩa (Fix Partition Limits)...");
             RunCommandLine("powercfg -h off");
             RunCommandLine("fsutil usn deletejournal /d C:");
+            RunCommandLine("vssadmin delete shadows /all /quiet");
 
-            // Diskpart script creation
+            int diskNum = GetDiskNumberForDrive("C");
+            log?.Invoke($"Đã phát hiện phân vùng C: nằm trên Ổ đĩa vật lý (Disk) #{diskNum}.");
+
+            // Diskpart script creation with explicit disk and volume selection
             var scriptPath = Path.Combine(Path.GetTempPath(), "diskpart_winpe_25gb.txt");
             var scriptContent = new StringBuilder();
+            scriptContent.AppendLine($"select disk {diskNum}");
             scriptContent.AppendLine("select volume C");
-            scriptContent.AppendLine("shrink desired=25600 minimum=10240");
+            scriptContent.AppendLine("shrink desired=25600 minimum=5120");
+            scriptContent.AppendLine($"select disk {diskNum}");
             scriptContent.AppendLine("create partition primary");
             scriptContent.AppendLine("format fs=ntfs quick label=\"WINPE\"");
             scriptContent.AppendLine("assign");
@@ -280,46 +286,107 @@ public class WinPeService
 
             try { File.Delete(scriptPath); } catch { }
 
-            // Find the newly created WINPE drive
-            System.Threading.Thread.Sleep(1500);
-            foreach (var d in DriveInfo.GetDrives())
+            // Check if WINPE was created
+            var winPeDrive = FindWinPeDrive();
+
+            // If Diskpart failed, try PowerShell Storage API fallback
+            if (winPeDrive == null)
             {
-                if (d.IsReady && string.Equals(d.VolumeLabel, "WINPE", StringComparison.OrdinalIgnoreCase))
-                {
-                    var letter = d.Name.TrimEnd('\\');
-                    log?.Invoke($"✅ Tạo phân vùng WINPE thành công tại ổ [{letter}]!");
+                log?.Invoke("⚠️ Diskpart chưa tạo được phân vùng. Đang thử cơ chế dự phòng bằng PowerShell Storage API...");
+                var psScript = @"
+try {
+    $p = Get-Partition -DriveLetter C -ErrorAction Stop
+    $targetSize = $p.Size - 25GB
+    if ($targetSize -gt 15GB) {
+        Resize-Partition -DriveLetter C -Size $targetSize -ErrorAction SilentlyContinue
+    }
+    $newP = New-Partition -DiskNumber $p.DiskNumber -UseMaximumSize -AssignDriveLetter -ErrorAction Stop
+    Format-Volume -Partition $newP -FileSystem NTFS -NewFileSystemLabel 'WINPE' -Confirm:$false
+} catch {
+    Write-Output ('Lỗi PowerShell Storage: ' + $_.Exception.Message)
+}
+";
+                var tempPs1 = Path.Combine(Path.GetTempPath(), "resize_winpe.ps1");
+                File.WriteAllText(tempPs1, psScript);
+                var psOut = RunCommandLine($"powershell -NoProfile -ExecutionPolicy Bypass -File \"{tempPs1}\"");
+                log?.Invoke(psOut);
+                try { File.Delete(tempPs1); } catch { }
 
-                    // Create standard folder structure
-                    var dirs = new[] { "Boot", "sources", "Drivers", "Apps", "ISO" };
-                    foreach (var sub in dirs)
-                    {
-                        var dirPath = Path.Combine(d.RootDirectory.FullName, sub);
-                        Directory.CreateDirectory(dirPath);
-                    }
-
-                    // Copy boot.sdi into the new partition
-                    var sysSdi = FindSystemBootSdi();
-                    if (sysSdi != null && File.Exists(sysSdi))
-                    {
-                        try
-                        {
-                            File.Copy(sysSdi, Path.Combine(d.RootDirectory.FullName, "boot.sdi"), true);
-                            File.Copy(sysSdi, Path.Combine(d.RootDirectory.FullName, "Boot", "boot.sdi"), true);
-                            log?.Invoke("Đã khởi tạo sẵn cấu trúc thư mục cứu hộ và boot.sdi trên phân vùng WinPE.");
-                        }
-                        catch { }
-                    }
-
-                    return (true, $"Đã tạo thành công phân vùng WinPE (25 GB, NTFS, ổ {letter})!", letter);
-                }
+                winPeDrive = FindWinPeDrive();
             }
 
-            return (true, "Đã thực hiện lệnh tạo phân vùng Diskpart. Vui lòng kiểm tra lại trong File Explorer hoặc Disk Management.", null);
+            if (winPeDrive != null)
+            {
+                var letter = winPeDrive.Name.TrimEnd('\\');
+                log?.Invoke($"✅ Tạo phân vùng WINPE thành công tại ổ [{letter}]!");
+
+                // Create standard folder structure
+                var dirs = new[] { "Boot", "sources", "Drivers", "Apps", "ISO" };
+                foreach (var sub in dirs)
+                {
+                    var dirPath = Path.Combine(winPeDrive.RootDirectory.FullName, sub);
+                    Directory.CreateDirectory(dirPath);
+                }
+
+                // Copy boot.sdi into the new partition
+                var sysSdi = FindSystemBootSdi();
+                if (sysSdi != null && File.Exists(sysSdi))
+                {
+                    try
+                    {
+                        File.Copy(sysSdi, Path.Combine(winPeDrive.RootDirectory.FullName, "boot.sdi"), true);
+                        File.Copy(sysSdi, Path.Combine(winPeDrive.RootDirectory.FullName, "Boot", "boot.sdi"), true);
+                        log?.Invoke("Đã khởi tạo sẵn cấu trúc thư mục cứu hộ và boot.sdi trên phân vùng WinPE.");
+                    }
+                    catch { }
+                }
+
+                return (true, $"Đã tạo thành công phân vùng WinPE (ổ {letter})!", letter);
+            }
+
+            return (false, "Không thể co ổ đĩa và tạo phân vùng WinPE. Vui lòng kiểm tra xem ổ C có đang bị BitLocker khóa hoặc giới hạn co ổ không.", null);
         }
         catch (Exception ex)
         {
             return (false, $"Lỗi khi tạo phân vùng WinPE: {ex.Message}", null);
         }
+    }
+
+    public int GetDiskNumberForDrive(string driveLetter)
+    {
+        char letter = driveLetter.Trim().ToUpperInvariant()[0];
+        try
+        {
+            var psi = new ProcessStartInfo("powershell.exe", $"-NoProfile -Command \"(Get-Partition -DriveLetter {letter} -ErrorAction SilentlyContinue).DiskNumber\"")
+            {
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            using var p = Process.Start(psi);
+            if (p != null)
+            {
+                var outText = p.StandardOutput.ReadToEnd().Trim();
+                p.WaitForExit(3000);
+                if (int.TryParse(outText, out int diskNum)) return diskNum;
+            }
+        }
+        catch { }
+
+        return 0;
+    }
+
+    private DriveInfo? FindWinPeDrive()
+    {
+        System.Threading.Thread.Sleep(2000);
+        foreach (var d in DriveInfo.GetDrives())
+        {
+            if (d.IsReady && string.Equals(d.VolumeLabel, "WINPE", StringComparison.OrdinalIgnoreCase))
+            {
+                return d;
+            }
+        }
+        return null;
     }
 
     /// <summary>

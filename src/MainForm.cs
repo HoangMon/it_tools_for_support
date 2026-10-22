@@ -678,8 +678,7 @@ public class MainForm : Form
             new("📋 Check thông tin máy", () => ShowDetailedSpecs()),
             new("🔓 Tắt Bitlocker", () => _systemService.TurnOffBitLocker("C:")),
             new("📦 Master Image", () => ShowMasterImageDialog()),
-            new("💾 Driver IRST / VMD", () => ShowIrstDriverDialog()),
-            new("📶 Show WiFi & VPN", () => ShowWifiBackupDialog())
+            new("💾 Driver IRST / VMD", () => ShowIrstDriverDialog())
         });
         pnl.Controls.Add(secSys);
 
@@ -689,7 +688,7 @@ public class MainForm : Form
             new("📡 Sao lưu Wifi", () => ShowWifiBackupDialog()),
             new("💽 Sao lưu Driver", () => ShowDriverBackupDialog()),
             new("📁 Sao lưu Dữ liệu", () => ShowDataBackupDialog()),
-            new("🌐 Sao lưu trình duyệt", () => Log("Sao lưu bookmark/profile Chrome, Edge, Cốc Cốc...")),
+            new("🌐 Sao lưu trình duyệt", () => ShowBrowserBackupDialog()),
             new("🔑 Mật khẩu & Chữ ký số", () => ShowCredentialAndCertificateDialog()),
             new("⬆️ Cập nhật driver hãng", () => _backupService.OpenBrandDriverPage(_sysInfo.Manufacturer))
         });
@@ -711,8 +710,7 @@ public class MainForm : Form
             new("📐 Fix limit chia drive", () => _diskService.FixPartitionLimits()),
             new("💿 Cài lại Win 10/11", () => ChooseAndApplyWim()),
             new("🌐 Kho ISO Windows", () => _maintenanceService.OpenUrl("https://www.microsoft.com/software-download")),
-            new("🧹 Dọn boot + ổ WinPE", () => _diskService.CleanWinPeBoot()),
-            new("📥 Lấy driver từ ổ cứng", () => Log("Trích xuất driver từ phân vùng Windows cũ..."))
+            new("🧹 Dọn boot + ổ WinPE", () => _diskService.CleanWinPeBoot())
         });
         pnl.Controls.Add(secWinPe);
 
@@ -722,9 +720,9 @@ public class MainForm : Form
             new("🗑️ Xóa file rác", () => ShowSystemCleanerDialog()),
             new("🔍 Check - Test", () => ShowCheckTestDialog()),
             new("🖱️ Menu chuột Win 10", () => ToggleContextMenuStyle()),
-            new("⚡ Tác vụ tự động", () => Log("Chạy kịch bản tối ưu hóa tự động...")),
-            new("🎧 Hỗ trợ từ xa", () => SafeLaunch("msra.exe")),
-            new("📄 Thiết lập Office", () => Log("Kiểm tra và sửa lỗi thiết lập Microsoft Office..."))
+            new("⚡ Tác vụ tự động", () => ShowAutoTasksDialog()),
+            new("🎧 Hỗ trợ từ xa", () => ShowRemoteSupportDialog()),
+            new("📄 Thiết lập Office", () => ShowOfficeConfigDialog())
         });
         pnl.Controls.Add(secOther);
 
@@ -752,11 +750,31 @@ public class MainForm : Form
         // Section 1: Update Windows
         var secUpdate = CreateCardSection("🔄  Update Windows", ref topY, new ToolBtn[]
         {
-            new("⚠️ Reset PC", () => SafeLaunch("systemreset.exe")),
-            new("⛔ Chặn Win Update", () => { _systemService.ToggleWindowsUpdate(true); Log("Đã tắt dịch vụ Windows Update."); }),
-            new("🛡️ Chặn nâng 10->11", () => { _systemService.BlockWin11Upgrade(true); Log("Đã chặn tự động nâng cấp Windows 11."); }),
+            new("⚠️ Reset PC", () =>
+            {
+                var res = MessageBox.Show("Bạn có chắc chắn muốn mở trình khôi phục cài đặt gốc Windows (Reset this PC)?", "Xác Nhận Reset PC", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (res == DialogResult.Yes) SafeLaunch("systemreset.exe");
+            }),
+            new("⛔ Chặn Win Update", () =>
+            {
+                _systemService.ToggleWindowsUpdate(true);
+                Log("Đã chặn tự động cập nhật Windows Update (Dịch vụ wuauserv = Disabled & Group Policy NoAutoUpdate = 1).");
+                MessageBox.Show("Đã thiết lập chặn Windows Update tự động thành công!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }),
+            new("🛡️ Chặn nâng 10->11", () =>
+            {
+                _systemService.BlockWin11Upgrade(true);
+                Log("Đã chặn tự động nâng cấp Windows 11 qua chính sách TargetReleaseVersion.");
+                MessageBox.Show("Đã chặn nâng cấp tự động lên Windows 11 (khóa phiên bản hiện tại)!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }),
             new("🔼 Nâng / Hạ Windows", () => SafeLaunch("ms-settings:activation", fallback: "slui.exe")),
-            new("🎯 Đưa Win về đúng bản", () => Log("Kiểm tra edition & license phù hợp...")),
+            new("🎯 Đưa Win về đúng bản", () =>
+            {
+                Log("Đang truy vấn thông tin phiên bản Windows qua DISM...");
+                var info = _systemService.GetWindowsEditionsInfo();
+                Log(info);
+                MessageBox.Show(info, "Thông Tin Phiên Bản Windows & Khả Năng Nâng/Hạ Cấp", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }),
             new("🚀 Startup (tự bật app)", () => SafeLaunch("taskmgr.exe", args: "/0 /startup"))
         });
         pnl.Controls.Add(secUpdate);
@@ -765,8 +783,17 @@ public class MainForm : Form
         var secIssue = CreateCardSection("🔧  Khi máy có sự cố", ref topY, new ToolBtn[]
         {
             new("🌐 Chẩn đoán mạng", () => { _ = _maintenanceService.RunSystemRepairAsync("network_diag", Log); }),
-            new("📦 Sửa lỗi file nén", () => Log("Đặt lại liên kết ứng dụng WinRAR / 7-Zip...")),
-            new("🖨️ Sửa lỗi máy in", () => _systemService.ResetPrintSpooler())
+            new("📦 Sửa lỗi file nén", () =>
+            {
+                bool ok = _systemService.FixCompressedFileAssociations(Log);
+                if (ok) MessageBox.Show("Đã khôi phục liên kết mặc định cho file nén (.zip, .7z, .rar) thành công!", "Sửa Lỗi File Nén", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else MessageBox.Show("Có lỗi khi khôi phục liên kết file nén. Vui lòng kiểm tra quyền Administrator.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }),
+            new("🖨️ Sửa lỗi máy in", () =>
+            {
+                bool ok = _systemService.ResetPrintSpooler(Log);
+                if (ok) MessageBox.Show("Đã xóa lệnh in kẹt và khởi động lại dịch vụ Print Spooler thành công!", "Sửa Lỗi Máy In", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            })
         });
         pnl.Controls.Add(secIssue);
 
@@ -774,9 +801,21 @@ public class MainForm : Form
         var secTransition = CreateCardSection("💿  Cài đặt Windows", ref topY, new ToolBtn[]
         {
             new("💾 Cài Win (WinPE)", () => ChooseAndApplyWim()),
-            new("◀️ Win 10/11 → 7", () => Log("Chuẩn bị driver Legacy/NVMe để hạ cấp Windows 7...")),
-            new("▶️ Win 7 → 10/11", () => _maintenanceService.OpenUrl("https://www.microsoft.com/software-download/windows11")),
-            new("🔄 Win 7 → 7", () => Log("Cài lại Windows 7 sạch..."))
+            new("◀️ Win 10/11 → 7", () =>
+            {
+                Log("Hướng dẫn hạ cấp về Windows 7: Yêu cầu driver NVMe & USB 3.0 xHCI...");
+                MessageBox.Show("Để hạ cấp từ Windows 10/11 về Windows 7 trên bo mạch đời mới:\n\n1. Bộ cài Windows 7 bắt buộc phải được nạp sẵn driver NVMe (KB2990941, KB3087873) và driver USB 3.0/3.1 (xHCI).\n2. Trong BIOS, cần chuyển từ Secure Boot -> Disabled, bật CSM / Legacy Support (nếu có).\n3. Sử dụng công cụ 'Tạo boot WinPE' để khởi động và nạp ảnh WIM vào ổ C:.", "Hạ Cấp Windows 7 - Hướng Dẫn Kỹ Thuật", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }),
+            new("▶️ Win 7 → 10/11", () =>
+            {
+                Log("Mở trang tải bộ công cụ nâng cấp Windows Media Creation Tool...");
+                _maintenanceService.OpenUrl("https://www.microsoft.com/software-download/windows10");
+            }),
+            new("🔄 Win 7 → 7", () =>
+            {
+                Log("Khởi động quy trình Cài đặt Windows 7 sạch (Clean Install)...");
+                ChooseAndApplyWim();
+            })
         });
         pnl.Controls.Add(secTransition);
 
@@ -797,7 +836,18 @@ public class MainForm : Form
             new("🌀 Debian (v9.1)", () => _maintenanceService.OpenUrl("https://cdimage.debian.org/")),
             new("🍃 Mint (v10.1)", () => _maintenanceService.OpenUrl("https://linuxmint.com/")),
             new("🐉 Kali (v11.1)", () => _maintenanceService.OpenUrl("https://www.kali.org/")),
-            new("🧹 Gỡ Linux", () => { _diskService.CleanWinPeBoot(); Log("Đã dọn dẹp phân vùng Linux & GRUB Bootloader."); })
+            new("🧹 Gỡ Linux", () =>
+            {
+                var res = MessageBox.Show("Bạn có muốn dọn dẹp phân vùng Linux và khôi phục Windows Bootloader mặc định không?", "Gỡ Linux & Phục Hồi Windows Boot", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (res == DialogResult.Yes)
+                {
+                    Log("Đang chạy bootrec /fixmbr và bcdboot C:\\Windows...");
+                    Process.Start(new ProcessStartInfo("cmd.exe", "/c bootrec /fixmbr & bcdboot C:\\Windows /l vi-VN") { CreateNoWindow = true, UseShellExecute = false });
+                    _diskService.CleanWinPeBoot();
+                    Log("✅ Đã dọn dẹp phân vùng và phục hồi Windows Bootloader.");
+                    MessageBox.Show("Đã phục hồi Windows Bootloader và dọn dẹp menu khởi động!", "Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            })
         });
         pnl.Controls.Add(secLinuxDual);
 
@@ -807,8 +857,16 @@ public class MainForm : Form
             new("🖥️ Server 2019", () => _maintenanceService.OpenUrl("https://www.microsoft.com/evalcenter/evaluate-windows-server-2019")),
             new("🖥️ Server 2022", () => _maintenanceService.OpenUrl("https://www.microsoft.com/evalcenter/evaluate-windows-server-2022")),
             new("🖥️ Server 2025", () => _maintenanceService.OpenUrl("https://www.microsoft.com/evalcenter/evaluate-windows-server-2025")),
-            new("⚡ Win 10 LTSC", () => Log("Mở thông tin và gói cài Windows 10 Enterprise LTSC...")),
-            new("⚡ Win 11 LTSC", () => Log("Mở thông tin và gói cài Windows 11 Enterprise LTSC..."))
+            new("⚡ Win 10 LTSC", () =>
+            {
+                Log("Mở trang tải bản dùng thử chính thức Windows 10 Enterprise LTSC...");
+                _maintenanceService.OpenUrl("https://www.microsoft.com/evalcenter/evaluate-windows-10-enterprise");
+            }),
+            new("⚡ Win 11 LTSC", () =>
+            {
+                Log("Mở trang tải bản dùng thử chính thức Windows 11 Enterprise LTSC 2024...");
+                _maintenanceService.OpenUrl("https://www.microsoft.com/evalcenter/evaluate-windows-11-enterprise");
+            })
         });
         pnl.Controls.Add(secLtsc);
 
@@ -1024,8 +1082,8 @@ public class MainForm : Form
         };
         var lblComp = new Label { Text = "Công ty:", AutoSize = true, Margin = new Padding(0, 8, 8, 0), Font = new Font("Segoe UI", 9f), ForeColor = TextHeading };
         _cboCompany = new ComboBox { Size = new Size(180, 25), Margin = new Padding(0, 5, 8, 0), DropDownStyle = ComboBoxStyle.DropDown };
-        var btnUpSheet = CreateFlowButton("⬆️ Up Sheet", 110, () => { _ = SimulateUploadSheet(false); });
-        var btnUpBoth = CreateFlowButton("⬆️ Up cả 2 sheet", 135, () => { _ = SimulateUploadSheet(true); });
+        var btnUpSheet = CreateFlowButton("⬆️ Up Sheet", 110, () => { _ = RealUploadSheetAsync(false); });
+        var btnUpBoth = CreateFlowButton("⬆️ Up cả 2 sheet", 135, () => { _ = RealUploadSheetAsync(true); });
         var btnAddComp = CreateFlowButton("➕ Thêm", 90, () =>
         {
             var t = _cboCompany.Text.Trim();
@@ -1110,8 +1168,8 @@ public class MainForm : Form
         };
 
         _cboSyncDevice = new ComboBox { Size = new Size(200, 25), Margin = new Padding(0, 5, 8, 0), DropDownStyle = ComboBoxStyle.DropDownList };
-        var btnRestorePc = CreateFlowButton("🔄 Restore PC", 125, () => Log("Đang truy vấn Google Sheet để phục hồi cấu hình PC..."));
-        var btnCheckDup = CreateFlowButton("🔍 Check trùng lặp", 140, () => Log("Đang kiểm tra trùng lặp thiết bị trên Sheet..."));
+        var btnRestorePc = CreateFlowButton("🔄 Restore PC", 125, () => { _ = RealRestorePcAsync(); });
+        var btnCheckDup = CreateFlowButton("🔍 Check trùng lặp", 140, () => { _ = RealCheckDuplicateAsync(); });
         var btnReloadCfg = CreateFlowButton("🔄 Tải lại cấu hình", 130, () => LoadSystemData());
 
         flowSync1.Controls.Add(_cboSyncDevice);
@@ -1533,6 +1591,22 @@ public class MainForm : Form
         }
     }
 
+    private void ShowBrowserBackupDialog()
+    {
+        try
+        {
+            Log("Mở Trình sao lưu & khôi phục dữ liệu Trình duyệt web (Bookmarks, History, Profile)...");
+            using var form = new BrowserBackupForm();
+            ThemeHelper.ApplyTheme(form);
+            form.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi mở Sao lưu trình duyệt]: {ex.Message}");
+            MessageBox.Show($"Không thể mở giao diện Sao lưu trình duyệt:\n\n{ex.Message}", "Lỗi Thực Thi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void ShowCredentialAndCertificateDialog()
     {
         try
@@ -1625,20 +1699,79 @@ public class MainForm : Form
         }
     }
 
+    private void ShowAutoTasksDialog()
+    {
+        try
+        {
+            Log("Mở Giao diện Tác vụ tự động hóa bảo trì & tối ưu hệ thống...");
+            using var form = new AutoTasksForm();
+            ThemeHelper.ApplyTheme(form);
+            form.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi mở Tác vụ tự động]: {ex.Message}");
+            MessageBox.Show($"Không thể mở giao diện Tác vụ tự động:\n\n{ex.Message}", "Lỗi Thực Thi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void ShowRemoteSupportDialog()
+    {
+        try
+        {
+            Log("Mở Trung tâm Hỗ trợ từ xa (UltraViewer, AnyDesk, TeamViewer, RustDesk, Quick Assist)...");
+            using var form = new RemoteSupportForm();
+            ThemeHelper.ApplyTheme(form);
+            form.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi mở Hỗ trợ từ xa]: {ex.Message}");
+            MessageBox.Show($"Không thể mở giao diện Hỗ trợ từ xa:\n\n{ex.Message}", "Lỗi Thực Thi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void ShowOfficeConfigDialog()
+    {
+        try
+        {
+            Log("Mở Giao diện Thiết lập & Sửa lỗi Microsoft Office (OSPP Licensing & Repair)...");
+            using var form = new OfficeConfigForm();
+            ThemeHelper.ApplyTheme(form);
+            form.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi mở Thiết lập Office]: {ex.Message}");
+            MessageBox.Show($"Không thể mở giao diện Thiết lập Office:\n\n{ex.Message}", "Lỗi Thực Thi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void ToggleContextMenuStyle()
     {
         try
         {
-            bool isWin10 = _systemService.IsWin10ContextMenuActive();
+            if (!_systemService.IsWindows11OrGreater())
+            {
+                string win10Msg = $"💻 Hệ điều hành phát hiện: Windows 10 (Build {Environment.OSVersion.Version.Build}).\n\n" +
+                                  "Hệ điều hành Windows 10 đã mặc định sử dụng menu chuột phải cổ điển đầy đủ tính năng ngay từ đầu.\n" +
+                                  "Tính năng chuyển đổi menu chuột chỉ áp dụng cho Windows 11.";
+                Log($"[Menu chuột phải] Hệ thống là Windows 10 (Build {Environment.OSVersion.Version.Build}) - Đã mặc định dùng menu cổ điển.");
+                MessageBox.Show(this, win10Msg, "Nhận Diện Hệ Điều Hành: Windows 10", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            bool isWin10Style = _systemService.IsWin10ContextMenuActive();
             string user = Environment.UserName;
 
-            if (isWin10)
+            if (isWin10Style)
             {
-                string msg = $"Hiện tại: chuột phải đang là menu kiểu WINDOWS 10 (user {user}).\n\n" +
-                             "Trả về menu kiểu Windows 11 (menu gọn, có dòng \"Show more options\")?\n\n" +
-                             "Thanh taskbar + cửa sổ thư mục sẽ tắt và tự bật lại trong vài giây (Explorer khởi động lại). Các file đang mở không bị ảnh hưởng.";
+                string msg = $"💻 Hệ điều hành: Windows 11 (user: {user}).\n" +
+                             "Hiện tại: Chuột phải đang là menu kiểu WINDOWS 10 CỔ ĐIỂN.\n\n" +
+                             "Bạn có muốn trả về menu hiện đại mặc định của Windows 11 (menu gọn, có dòng \"Show more options\") không?\n\n" +
+                             "Thanh taskbar và Windows Explorer sẽ tự khởi động lại trong giây lát.";
 
-                var res = MessageBox.Show(this, msg, "Chuột phải kiểu Windows 10", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var res = MessageBox.Show(this, msg, "Chuyển Đổi Menu Chuột Phải", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (res == DialogResult.Yes)
                 {
                     Log("Đang chuyển đổi menu chuột phải về mặc định của Windows 11...");
@@ -1648,11 +1781,12 @@ public class MainForm : Form
             }
             else
             {
-                string msg = $"Hiện tại: chuột phải đang là menu kiểu WINDOWS 11 (user {user}).\n\n" +
-                             "Đổi sang menu kiểu Windows 10 (menu cổ điển, đầy đủ tính năng ngay từ đầu)?\n\n" +
-                             "Thanh taskbar + cửa sổ thư mục sẽ tắt và tự bật lại trong vài giây (Explorer khởi động lại). Các file đang mở không bị ảnh hưởng.";
+                string msg = $"💻 Hệ điều hành: Windows 11 (user: {user}).\n" +
+                             "Hiện tại: Chuột phải đang là menu mặc định của WINDOWS 11.\n\n" +
+                             "Bạn có muốn đổi sang menu kiểu Windows 10 (cổ điển, hiển thị đầy đủ tính năng ngay từ đầu) không?\n\n" +
+                             "Thanh taskbar và Windows Explorer sẽ tự khởi động lại trong giây lát.";
 
-                var res = MessageBox.Show(this, msg, "Chuột phải kiểu Windows 10", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var res = MessageBox.Show(this, msg, "Chuyển Đổi Menu Chuột Phải", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (res == DialogResult.Yes)
                 {
                     Log("Đang chuyển đổi menu chuột phải sang kiểu Windows 10 cổ điển...");
@@ -1793,20 +1927,134 @@ public class MainForm : Form
         }
     }
 
-    private async Task SimulateUploadSheet(bool bothSheets)
+    private async Task RealUploadSheetAsync(bool bothSheets)
     {
-        Log($"Bắt đầu đẩy thông tin PC lên Google Sheet (Cả 2 sheet = {bothSheets})...");
-        _progressBar.Value = 20;
-        await Task.Delay(400);
+        string scriptUrl = _txtAppsScript.Text.Trim();
+        if (string.IsNullOrWhiteSpace(scriptUrl))
+        {
+            MessageBox.Show("Vui lòng nhập Link triển khai Google Apps Script trước khi tải lên!", "Thiếu Cấu Hình", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
 
-        _progressBar.Value = 60;
-        Log($"Tên máy: {_cboMachineName.Text} | Công ty: {_cboCompany.Text} | Key: {_sysInfo.WindowsProductKey}");
-        await Task.Delay(400);
+        string machineName = string.IsNullOrWhiteSpace(_cboMachineName.Text) ? _sysInfo.MachineName : _cboMachineName.Text.Trim();
+        string company = string.IsNullOrWhiteSpace(_cboCompany.Text) ? "Công ty TNHH Mẫu" : _cboCompany.Text.Trim();
 
-        _progressBar.Value = 100;
-        Log("✅ Đã cập nhật dữ liệu lên Google Sheet thành công!");
-        MessageBox.Show("Đã đồng bộ thông tin máy tính lên Google Sheet thành công!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        var payload = new DeviceSyncPayload
+        {
+            Action = "upload",
+            MachineName = machineName,
+            Company = company,
+            OsVersion = $"{_sysInfo.OsVersion} ({_sysInfo.OsArchitecture})",
+            Cpu = _sysInfo.ProcessorName,
+            Ram = _sysInfo.TotalMemoryMb,
+            ProductKey = _sysInfo.WindowsProductKey,
+            SerialNumber = _sysInfo.SerialNumber,
+            Manufacturer = _sysInfo.Manufacturer,
+            Model = _sysInfo.Model,
+            MacAddress = _systemService.GetActiveMacAddress(),
+            Status = "Active",
+            BothSheets = bothSheets
+        };
+
+        Log($"[Google Sheet] Bắt đầu đồng bộ thông tin máy '{machineName}' ({company}) lên Sheet...");
+        var (ok, msg) = await _sheetService.UploadDeviceInfoAsync(scriptUrl, payload, p =>
+        {
+            if (InvokeRequired) Invoke(() => _progressBar.Value = p);
+            else _progressBar.Value = p;
+        });
+
         _progressBar.Value = 0;
+        Log(ok ? $"[Google Sheet] ✅ {msg}" : $"[Google Sheet] ❌ {msg}");
+        MessageBox.Show(msg, ok ? "Đồng Bộ Thành Công" : "Lỗi Đồng Bộ", MessageBoxButtons.OK, ok ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
+    }
+
+    private async Task RealRestorePcAsync()
+    {
+        string scriptUrl = _txtAppsScript.Text.Trim();
+        if (string.IsNullOrWhiteSpace(scriptUrl))
+        {
+            MessageBox.Show("Vui lòng nhập Link triển khai Google Apps Script trước!", "Thiếu Cấu Hình", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        Log("[Google Sheet] Đang truy vấn danh sách thiết bị từ Google Sheet...");
+        _progressBar.Value = 30;
+        var (ok, list, msg) = await _sheetService.FetchDevicesAsync(scriptUrl);
+        _progressBar.Value = 0;
+
+        if (!ok)
+        {
+            Log($"[Google Sheet] ❌ {msg}");
+            MessageBox.Show(msg, "Lỗi Truy Vấn", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        Log($"[Google Sheet] ✅ Đã nhận diện {list.Count} máy từ Sheet.");
+
+        string curSerial = _sysInfo.SerialNumber;
+        string curMachine = _sysInfo.MachineName;
+        var matched = list.FirstOrDefault(d =>
+            (!string.IsNullOrEmpty(curSerial) && !string.IsNullOrEmpty(d.SerialNumber) && d.SerialNumber.Equals(curSerial, StringComparison.OrdinalIgnoreCase)) ||
+            (!string.IsNullOrEmpty(curMachine) && d.MachineName.Equals(curMachine, StringComparison.OrdinalIgnoreCase)));
+
+        if (matched != null)
+        {
+            string detail = $"Tìm thấy bản ghi khớp:\n- Tên máy: {matched.MachineName}\n- Công ty: {matched.Company}\n- Serial: {matched.SerialNumber}\n- Key: {matched.ProductKey}\n\nBạn có muốn áp dụng Tên máy và Công ty này vào cấu hình không?";
+            var res = MessageBox.Show(detail, "Khôi Phục Cấu Hình PC (Restore PC)", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (res == DialogResult.Yes)
+            {
+                if (!string.IsNullOrEmpty(matched.MachineName)) _cboMachineName.Text = matched.MachineName;
+                if (!string.IsNullOrEmpty(matched.Company)) _cboCompany.Text = matched.Company;
+                Log($"[Restore PC] Đã áp dụng cấu hình: Tên '{matched.MachineName}', Công ty '{matched.Company}'.");
+            }
+        }
+        else
+        {
+            MessageBox.Show($"Không tìm thấy bản ghi nào trên Google Sheet khớp với Serial '{curSerial}' hoặc Tên '{curMachine}'.\nTổng số máy trong Sheet: {list.Count}.", "Không Tìm Thấy", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+
+    private async Task RealCheckDuplicateAsync()
+    {
+        string scriptUrl = _txtAppsScript.Text.Trim();
+        if (string.IsNullOrWhiteSpace(scriptUrl))
+        {
+            MessageBox.Show("Vui lòng nhập Link triển khai Google Apps Script trước!", "Thiếu Cấu Hình", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        Log("[Google Sheet] Đang kiểm tra trùng lặp thiết bị với dữ liệu Google Sheet...");
+        _progressBar.Value = 30;
+        var (ok, list, msg) = await _sheetService.FetchDevicesAsync(scriptUrl);
+        _progressBar.Value = 0;
+
+        if (!ok)
+        {
+            Log($"[Google Sheet] ❌ {msg}");
+            MessageBox.Show(msg, "Lỗi Kiểm Tra", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        string curSerial = _sysInfo.SerialNumber;
+        string curMachine = string.IsNullOrWhiteSpace(_cboMachineName.Text) ? _sysInfo.MachineName : _cboMachineName.Text.Trim();
+
+        var duplicates = list.Where(d =>
+            (!string.IsNullOrEmpty(curSerial) && !string.IsNullOrEmpty(d.SerialNumber) && d.SerialNumber.Equals(curSerial, StringComparison.OrdinalIgnoreCase)) ||
+            d.MachineName.Equals(curMachine, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        if (duplicates.Count > 0)
+        {
+            string dupInfo = $"⚠️ Phát hiện {duplicates.Count} thiết bị trùng lặp trên Google Sheet:\n\n" +
+                string.Join("\n", duplicates.Select(d => $"• Máy: {d.MachineName} | Cty: {d.Company} | Serial: {d.SerialNumber} | Key: {d.ProductKey}"));
+            Log($"[Check trùng lặp] {dupInfo}");
+            MessageBox.Show(dupInfo, "Cảnh Báo Trùng Lặp Thiết Bị", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        else
+        {
+            string okMsg = $"✅ Tuyệt vời! Thiết bị '{curMachine}' (Serial: {curSerial}) hoàn toàn MỚI, KHÔNG bị trùng lặp với {list.Count} thiết bị trong Google Sheet.";
+            Log($"[Check trùng lặp] {okMsg}");
+            MessageBox.Show(okMsg, "Kiểm Tra Trùng Lặp", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 
     private void ShowAppsScriptModal()

@@ -166,34 +166,41 @@ public class WinPeBootForm : Form
 
     private Panel BuildAnhdvPanel()
     {
-        var pnl = new Panel
+        var pnl = new TableLayoutPanel
         {
-            AutoSize = true,
             Dock = DockStyle.Top,
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            ColumnCount = 1,
+            RowCount = 3,
             BackColor = Color.Transparent,
-            Margin = new Padding(0, 6, 0, 4)
+            Margin = new Padding(0, 4, 0, 4)
         };
+        pnl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+        pnl.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        pnl.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        pnl.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-        // Subtitle
+        // Row 0: Subtitle
         var lblDesc = new Label
         {
             Text = "Tải bộ AnhdvBoot rồi chọn kiểu boot vào WinPE (chạy trên Windows chính).",
             Font = new Font("Segoe UI", 9.75f, FontStyle.Bold),
             ForeColor = _textBrown,
             Dock = DockStyle.Top,
-            Height = 30,
+            Height = 28,
             TextAlign = ContentAlignment.MiddleCenter
         };
-        pnl.Controls.Add(lblDesc);
+        pnl.Controls.Add(lblDesc, 0, 0);
 
-        // Big Button: Tải & giải nén tất cả
+        // Row 1: Big Button: Tải & giải nén tất cả
         _btnDownloadAll = CreateThemedButton("📦 Tải & giải nén tất cả (AnhdvBoot + Apps + Tool)", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 44);
         _btnDownloadAll.Dock = DockStyle.Top;
-        _btnDownloadAll.Margin = new Padding(0, 4, 0, 8);
+        _btnDownloadAll.Margin = new Padding(0, 4, 0, 6);
         _btnDownloadAll.Click += (_, _) => OnClickDownloadAll();
-        pnl.Controls.Add(_btnDownloadAll);
+        pnl.Controls.Add(_btnDownloadAll, 0, 1);
 
-        // Two action buttons in a row
+        // Row 2: Two action buttons in a row
         var pnlActions = new TableLayoutPanel
         {
             Dock = DockStyle.Top,
@@ -201,7 +208,7 @@ public class WinPeBootForm : Form
             ColumnCount = 2,
             RowCount = 1,
             BackColor = Color.Transparent,
-            Margin = new Padding(0, 4, 0, 6)
+            Margin = new Padding(0, 2, 0, 6)
         };
         pnlActions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
         pnlActions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
@@ -216,7 +223,7 @@ public class WinPeBootForm : Form
 
         pnlActions.Controls.Add(_btnBootOnce, 0, 0);
         pnlActions.Controls.Add(_btnBootPermanent, 1, 0);
-        pnl.Controls.Add(pnlActions);
+        pnl.Controls.Add(pnlActions, 0, 2);
 
         return pnl;
     }
@@ -469,7 +476,8 @@ public class WinPeBootForm : Form
         using var choiceForm = new Form
         {
             Text = "Tải & Thiết lập bộ Anhdv Boot",
-            Size = new Size(580, 330),
+            Size = new Size(680, 420),
+            MinimumSize = new Size(620, 380),
             StartPosition = FormStartPosition.CenterParent,
             BackColor = _bgForm,
             FormBorderStyle = FormBorderStyle.FixedDialog,
@@ -480,10 +488,10 @@ public class WinPeBootForm : Form
         var lblPrompt = new Label
         {
             Text = "Chọn phương thức thiết lập bộ cứu hộ Anhdv Boot:",
-            Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+            Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textDark,
             Dock = DockStyle.Top,
-            Height = 36,
+            Height = 40,
             TextAlign = ContentAlignment.MiddleCenter
         };
         choiceForm.Controls.Add(lblPrompt);
@@ -493,14 +501,14 @@ public class WinPeBootForm : Form
             Dock = DockStyle.Fill,
             ColumnCount = 1,
             RowCount = 4,
-            Padding = new Padding(24, 6, 24, 14)
+            Padding = new Padding(24, 6, 24, 16)
         };
         pnlBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 25f));
         pnlBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 25f));
         pnlBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 25f));
         pnlBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 25f));
 
-        var btnStart = CreateThemedButton("⚡ Bắt đầu: Tự động khởi tạo & tải về C:\\AnhdvBootTool", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 40);
+        var btnStart = CreateThemedButton("⚡ Bắt đầu: Tự động khởi tạo & tải về C:\\AnhdvBootTool", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 48);
         btnStart.Click += (_, _) =>
         {
             choiceForm.Close();
@@ -512,7 +520,7 @@ public class WinPeBootForm : Form
             CheckStatusOnInit();
         };
 
-        var btnWeb = CreateThemedButton("📥 Tải AnhdvTools: Chọn nơi lưu & mở trang tải", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 40);
+        var btnWeb = CreateThemedButton("📥 Tải AnhdvTools: Chọn nơi lưu & mở trang tải", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
         btnWeb.Click += (_, _) =>
         {
             choiceForm.Close();
@@ -531,14 +539,14 @@ public class WinPeBootForm : Form
             CheckStatusOnInit();
         };
 
-        var btnExtract = CreateThemedButton("📦 Chọn file nén / ISO (.7z, .zip, .iso) để tự động giải nén", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 40);
+        var btnExtract = CreateThemedButton("📦 Chọn file nén / ISO (.7z, .zip, .iso) để tự động giải nén", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
         btnExtract.Click += async (_, _) =>
         {
             choiceForm.Close();
             await ExtractAnhdvPackage();
         };
 
-        var btnPickFolder = CreateThemedButton("📁 Đã có sẵn thư mục AnhdvBoot trên máy (Chọn thư mục)", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 40);
+        var btnPickFolder = CreateThemedButton("📁 Đã có sẵn thư mục AnhdvBoot trên máy (Chọn thư mục)", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
         btnPickFolder.Click += (_, _) =>
         {
             choiceForm.Close();
@@ -551,6 +559,7 @@ public class WinPeBootForm : Form
         pnlBtns.Controls.Add(btnPickFolder, 0, 3);
 
         choiceForm.Controls.Add(pnlBtns);
+        ThemeHelper.ApplyTheme(choiceForm);
         choiceForm.ShowDialog(this);
     }
 

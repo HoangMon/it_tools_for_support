@@ -325,8 +325,10 @@ public class MasterImageForm : Form
             }
             catch (Exception ex)
             {
-                Log($"[Lỗi chạy Sysprep]: {ex.Message}");
-                MessageBox.Show($"Lỗi chạy Sysprep: {ex.Message}\nNếu gặp lỗi, hãy bấm nút 'Sửa lỗi Sysprep' màu hồng phía dưới!", "Lỗi Sysprep", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var reason = _service.GetSysprepFailureReason();
+                string details = string.IsNullOrEmpty(reason) ? ex.Message : $"{ex.Message}\n\nChi tiết Panther Log:\n{reason}";
+                Log($"[Lỗi chạy Sysprep]: {details}");
+                MessageBox.Show($"Lỗi chạy Sysprep:\n\n{details}\n\nNếu gặp lỗi, hãy bấm nút 'Sửa lỗi Sysprep' màu hồng phía dưới để tự động gỡ các gói xung đột!", "Lỗi Sysprep", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
