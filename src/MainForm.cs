@@ -322,9 +322,9 @@ public class MainForm : Form
         var side = new Panel
         {
             Dock = DockStyle.Left,
-            Width = 160,
+            Width = 215,
             BackColor = SidebarBg,
-            Padding = new Padding(10, 16, 10, 16)
+            Padding = new Padding(12, 16, 12, 16)
         };
         side.Paint += (s, e) =>
         {
@@ -333,27 +333,43 @@ public class MainForm : Form
             e.Graphics.DrawLine(pen, side.Width - 1, 0, side.Width - 1, side.Height);
         };
 
+        var pnlNav = new TableLayoutPanel
+        {
+            Dock = DockStyle.Top,
+            Height = 214,
+            ColumnCount = 1,
+            RowCount = 4,
+            BackColor = Color.Transparent,
+            Margin = new Padding(0),
+            Padding = new Padding(0)
+        };
+        pnlNav.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+        pnlNav.RowStyles.Add(new RowStyle(SizeType.Absolute, 52f));
+        pnlNav.RowStyles.Add(new RowStyle(SizeType.Absolute, 52f));
+        pnlNav.RowStyles.Add(new RowStyle(SizeType.Absolute, 52f));
+        pnlNav.RowStyles.Add(new RowStyle(SizeType.Absolute, 52f));
+
         _btnTabDashboard = CreateNavButton("📊  Dashboard", 0);
         _btnTabCore = CreateNavButton("💼  Chức năng", 1);
         _btnTabAdv = CreateNavButton("⚙️  Nâng cao", 2);
         _btnTabDevice = CreateNavButton("📱  Thiết bị", 3);
 
-        _btnTabDashboard.Location = new Point(10, 16);
-        _btnTabCore.Location = new Point(10, 68);
-        _btnTabAdv.Location = new Point(10, 120);
-        _btnTabDevice.Location = new Point(10, 172);
+        pnlNav.Controls.Add(_btnTabDashboard, 0, 0);
+        pnlNav.Controls.Add(_btnTabCore, 0, 1);
+        pnlNav.Controls.Add(_btnTabAdv, 0, 2);
+        pnlNav.Controls.Add(_btnTabDevice, 0, 3);
 
         // Bottom patch container with version info and gear settings button
         _pnlBottomSidebar = new Panel
         {
             Dock = DockStyle.Bottom,
-            Height = 104,
+            Height = 110,
             BackColor = SidebarBg
         };
 
         _lblAppVersion = new Label
         {
-            Text = "ERNASTIE\nv2026.10.9",
+            Text = "ERNASTIE\nv1.0.1",
             Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
             ForeColor = Color.FromArgb(148, 163, 184),
             Dock = DockStyle.Top,
@@ -364,12 +380,12 @@ public class MainForm : Form
         _btnSettings = new Button
         {
             Text = "⚙️  Cài đặt",
-            Size = new Size(140, 44),
+            Dock = DockStyle.Bottom,
+            Height = 44,
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             FlatStyle = FlatStyle.Flat,
             ForeColor = Color.FromArgb(226, 232, 240),
             BackColor = SidebarNavBg,
-            Dock = DockStyle.Bottom,
             TextAlign = ContentAlignment.MiddleLeft,
             Padding = new Padding(12, 0, 0, 0),
             Cursor = Cursors.Hand
@@ -381,11 +397,8 @@ public class MainForm : Form
         _pnlBottomSidebar.Controls.Add(_btnSettings);
         _pnlBottomSidebar.Controls.Add(_lblAppVersion);
 
-        side.Controls.Add(_btnTabDashboard);
-        side.Controls.Add(_btnTabCore);
-        side.Controls.Add(_btnTabAdv);
-        side.Controls.Add(_btnTabDevice);
         side.Controls.Add(_pnlBottomSidebar);
+        side.Controls.Add(pnlNav);
 
         return side;
     }
@@ -395,13 +408,14 @@ public class MainForm : Form
         var btn = new Button
         {
             Text = text,
-            Size = new Size(140, 44),
+            Dock = DockStyle.Fill,
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             FlatStyle = FlatStyle.Flat,
             ForeColor = Color.FromArgb(226, 232, 240),
             BackColor = SidebarNavBg,
             TextAlign = ContentAlignment.MiddleLeft,
             Padding = new Padding(12, 0, 0, 0),
+            Margin = new Padding(0, 0, 0, 6),
             Cursor = Cursors.Hand
         };
         btn.FlatAppearance.BorderSize = 0;
@@ -507,6 +521,7 @@ public class MainForm : Form
             _btnSettings.BackColor = sideNavBg;
             _btnSettings.ForeColor = sideNavText;
             _btnSettings.FlatAppearance.BorderColor = borderCol;
+            _btnSettings.FlatAppearance.BorderSize = isLight ? 1 : 0;
             _pnlSidebar.Invalidate();
         }
 
