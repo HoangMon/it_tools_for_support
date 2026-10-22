@@ -15,9 +15,9 @@
     <Product>Ernastie - Cong cu cai dat va bao tri Windows</Product>
     <Company>Ernastie</Company>
     <Description>Ernastie - Cong cu ho tro IT, cai dat va bao tri Windows / WinPE (Full Features Unlocked)</Description>
-    <Version>2026.10.9.129</Version>
-    <FileVersion>2026.10.9.129</FileVersion>
-    <AssemblyVersion>2026.10.9.129</AssemblyVersion>
+    <Version>1.0.1</Version>
+    <FileVersion>1.0.1.0</FileVersion>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
