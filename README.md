@@ -1,4 +1,4 @@
-# 🛠️ Ernastie - IT Tools for Support
+# 🛠️ E-TOOLBOX - IT Tools for Support
 
 <p align="center">
   <img src="src/Resources/app.png" alt="Ernastie Crafting Table Logo" width="128" height="128" />
