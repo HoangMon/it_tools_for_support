@@ -20,7 +20,7 @@
 
 ## 📖 Giới thiệu (Overview)
 
-**Ernastie IT Tools** là giải pháp phần mềm chuyên dụng được thiết kế cho IT Helpdesk, Kỹ thuật viên bảo trì máy tính và người dùng yêu thích tối ưu hóa hệ thống.
+**E-TOOLBOX** là giải pháp phần mềm chuyên dụng được thiết kế cho IT Helpdesk, Kỹ thuật viên bảo trì máy tính và người dùng yêu thích tối ưu hóa hệ thống.
 
 Ứng dụng được đóng gói dưới dạng **Portable Single-File Executable (`.exe`)** tự chứa (.NET 8 Self-Contained), **hoạt động ngay lập tức** trên mọi máy tính mà không cần cài đặt và không yêu cầu cài trước bất kỳ thư viện hay .NET Runtime nào. Hoàn toàn tương thích và chạy mượt mà ngay cả trong môi trường cứu hộ **WinPE**.
 
