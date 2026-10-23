@@ -34,9 +34,9 @@ Công cụ hỗ trợ IT, cài đặt và bảo trì Windows / WinPE chuyên ngh
 * **Update Windows:** Reset PC, Chặn Windows Update vĩnh viễn, Chặn nâng cấp Win 10 lên 11, Nâng / Hạ Windows Edition, Đưa Win về đúng bản, Quản lý Startup.
 * **Khi máy có sự cố:** Chẩn đoán kết nối mạng, Sửa lỗi file nén (.zip/.rar/.7z), Sửa lỗi kẹt máy in (Reset Print Spooler).
 * **Cài đặt Windows:** Cài Win trong WinPE, Chuyển đổi qua lại giữa Windows 7 và Windows 10/11.
-* **Linux thay Windows (xoá ổ C:):** Cung cấp bộ cài Ubuntu, Debian, Linux Mint, Kali Linux.
+* **Linux thay Windows (xoá ổ C:):** Cài đặt tự động Ubuntu, Debian, Linux Mint, Kali Linux thay thế Windows (giữ ổ D:/E:).
 * **Linux song song Windows (Dual Boot):** Cài đặt song song Ubuntu (v8.1), Debian (v9.1), Mint (v10.1), Kali (v11.1), Gỡ bỏ Linux & phục hồi Bootloader.
-* **Windows LTSC / Server:** Tải và cài đặt Windows Server 2019, 2022, 2025, Windows 10 LTSC, Windows 11 LTSC.
+* **Windows LTSC / Server:** Tải và cài đặt tự động Windows Server 2019, 2022, 2025, Windows 10 LTSC, Windows 11 LTSC (1-Click Deployment Wizard).
 
 ---
 

@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using Ernastie.Services;
 
@@ -77,7 +77,7 @@ public class KeyboardTestForm : Form
 
         _btnReset = new Button
         {
-            Text = "🔄 Làm mới",
+            Text = "Đặt lại phím (Reset)",
             Size = new Size(110, 32),
             Location = new Point(pnlTop.Width - 235, 16),
             Anchor = AnchorStyles.Top | AnchorStyles.Right,

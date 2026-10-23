@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -105,11 +105,11 @@ public class WinPeBootForm : Form
         pnlTabs.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
         pnlTabs.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
 
-        _btnTabAnhdv = CreateTabButton("▶ 📦 Bộ AnhDV Boot (dựng sẵn)", true);
+        _btnTabAnhdv = CreateTabButton("▶ Bộ AnhDV Boot (Dựng sẵn)", true);
         _btnTabAnhdv.Margin = new Padding(0, 0, 4, 0);
         _btnTabAnhdv.Click += (_, _) => SwitchTab(true);
 
-        _btnTabCustomWim = CreateTabButton("🔧 Bộ tự tạo từ file WIM", false);
+        _btnTabCustomWim = CreateTabButton("Bộ tự tạo từ file WIM", false);
         _btnTabCustomWim.Margin = new Padding(4, 0, 0, 0);
         _btnTabCustomWim.Click += (_, _) => SwitchTab(false);
 
@@ -125,7 +125,7 @@ public class WinPeBootForm : Form
 
         var lblLogTitle = new Label
         {
-            Text = "📝 Nhật ký:",
+            Text = "Nhật ký tiến trình:",
             Font = new Font("Segoe UI", 9.75f, FontStyle.Bold),
             ForeColor = _textDark,
             Dock = DockStyle.Top,
@@ -194,7 +194,7 @@ public class WinPeBootForm : Form
         pnl.Controls.Add(lblDesc, 0, 0);
 
         // Row 1: Big Button: Tải & giải nén tất cả
-        _btnDownloadAll = CreateThemedButton("📦 Tải & giải nén tất cả (AnhdvBoot + Apps + Tool)", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 44);
+        _btnDownloadAll = CreateThemedButton("Tải & giải nén tất cả (AnhdvBoot + Apps + Tool)", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 44);
         _btnDownloadAll.Dock = DockStyle.Top;
         _btnDownloadAll.Margin = new Padding(0, 4, 0, 6);
         _btnDownloadAll.Click += (_, _) => OnClickDownloadAll();
@@ -271,8 +271,8 @@ public class WinPeBootForm : Form
             PlaceholderText = @"Chọn file WIM (C:\WinPE\boot.wim hoặc sources\boot.wim)..."
         };
 
-        _btnBrowseWim = CreateSmallButton("📁 Chọn WIM", () => BrowseWimFile());
-        _btnAutoDetectWim = CreateSmallButton("🔍 Tự tìm WIM", () => AutoDetectWimFile());
+        _btnBrowseWim = CreateSmallButton("Chọn WIM...", () => BrowseWimFile());
+        _btnAutoDetectWim = CreateSmallButton("Tự tìm WIM", () => AutoDetectWimFile());
 
         pnlWimFile.Controls.Add(_txtWimPath, 0, 0);
         pnlWimFile.Controls.Add(_btnBrowseWim, 1, 0);
@@ -292,7 +292,7 @@ public class WinPeBootForm : Form
 
         _chkInjectVmd = new CheckBox
         {
-            Text = "⚡ Tích hợp Intel RST (VMD)",
+            Text = "Tích hợp Intel RST (VMD)",
             Checked = true,
             AutoSize = true,
             Font = new Font("Segoe UI", 9f, FontStyle.Bold),
@@ -302,7 +302,7 @@ public class WinPeBootForm : Form
 
         _chkInjectWifi = new CheckBox
         {
-            Text = "📶 Tích hợp Driver WiFi máy hiện tại",
+            Text = "Tích hợp Driver Wi-Fi máy hiện tại",
             Checked = true,
             AutoSize = true,
             Font = new Font("Segoe UI", 9f, FontStyle.Bold),
@@ -310,7 +310,7 @@ public class WinPeBootForm : Form
             Margin = new Padding(0, 4, 16, 4)
         };
 
-        _btnInjectDrivers = CreateSmallButton("💉 Nạp Driver vào WIM", async () => await OnClickInjectDrivers());
+        _btnInjectDrivers = CreateSmallButton("Nạp Driver vào WIM", async () => await OnClickInjectDrivers());
         _btnInjectDrivers.Width = 160;
 
         pnlOptions.Controls.Add(_chkInjectVmd);
@@ -335,7 +335,7 @@ public class WinPeBootForm : Form
         _btnInstallToHdd.Margin = new Padding(0, 0, 4, 0);
         _btnInstallToHdd.Click += async (_, _) => await OnClickInstallCustomWimToHdd();
 
-        _btnMakeUsbBoot = CreateThemedButton("🔌 Tạo USB Boot WinPE", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 38);
+        _btnMakeUsbBoot = CreateThemedButton("Tạo USB Boot WinPE", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 38);
         _btnMakeUsbBoot.Margin = new Padding(4, 0, 0, 0);
         _btnMakeUsbBoot.Click += async (_, _) => await OnClickCreateUsbBoot();
 
@@ -371,7 +371,7 @@ public class WinPeBootForm : Form
             Margin = new Padding(0, 2, 8, 4)
         };
 
-        _btnRefreshUsb = CreateSmallButton("🔄 Quét USB", () => RefreshUsbDrives());
+        _btnRefreshUsb = CreateSmallButton("Quét lại USB", () => RefreshUsbDrives());
 
         pnlUsb.Controls.Add(lblUsb);
         pnlUsb.Controls.Add(_cboUsbDrives);
@@ -405,12 +405,12 @@ public class WinPeBootForm : Form
         if (isAnhdv)
         {
             Text = "Tạo WinPE Boot - bộ AnhDV";
-            _btnTabAnhdv.Text = "▶ 📦 Bộ AnhDV Boot (dựng sẵn)";
+            _btnTabAnhdv.Text = "▶ Bộ AnhDV Boot (Dựng sẵn)";
             _btnTabAnhdv.BackColor = ThemeHelper.IsDark ? ThemeHelper.CardBg : Color.White;
             _btnTabAnhdv.FlatAppearance.BorderColor = _tabActiveBorder;
             _btnTabAnhdv.FlatAppearance.BorderSize = 2;
 
-            _btnTabCustomWim.Text = "🔧 Bộ tự tạo từ file WIM";
+            _btnTabCustomWim.Text = "Bộ tự tạo từ file WIM";
             _btnTabCustomWim.BackColor = _bgForm;
             _btnTabCustomWim.FlatAppearance.BorderColor = _tabInactiveBorder;
             _btnTabCustomWim.FlatAppearance.BorderSize = 1;
@@ -421,12 +421,12 @@ public class WinPeBootForm : Form
         else
         {
             Text = "Tạo WinPE Boot - tự tạo từ file WIM";
-            _btnTabAnhdv.Text = "📦 Bộ AnhDV Boot (dựng sẵn)";
+            _btnTabAnhdv.Text = "Bộ AnhDV Boot (Dựng sẵn)";
             _btnTabAnhdv.BackColor = _bgForm;
             _btnTabAnhdv.FlatAppearance.BorderColor = _tabInactiveBorder;
             _btnTabAnhdv.FlatAppearance.BorderSize = 1;
 
-            _btnTabCustomWim.Text = "▶ 🔧 Bộ tự tạo từ file WIM";
+            _btnTabCustomWim.Text = "▶ Bộ tự tạo từ file WIM";
             _btnTabCustomWim.BackColor = ThemeHelper.IsDark ? ThemeHelper.CardBg : Color.White;
             _btnTabCustomWim.FlatAppearance.BorderColor = _tabActiveBorder;
             _btnTabCustomWim.FlatAppearance.BorderSize = 2;
@@ -508,7 +508,7 @@ public class WinPeBootForm : Form
         pnlBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 25f));
         pnlBtns.RowStyles.Add(new RowStyle(SizeType.Percent, 25f));
 
-        var btnStart = CreateThemedButton("⚡ Bắt đầu: Tự động khởi tạo & tải về C:\\AnhdvBootTool", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 48);
+        var btnStart = CreateThemedButton("Khởi tạo & Tự động tải về C:\\AnhdvBootTool", _btnGold, _btnGoldBorder, _textDark, FontStyle.Bold, 48);
         btnStart.Click += (_, _) =>
         {
             choiceForm.Close();
@@ -520,7 +520,7 @@ public class WinPeBootForm : Form
             CheckStatusOnInit();
         };
 
-        var btnWeb = CreateThemedButton("📥 Tải AnhdvTools: Chọn nơi lưu & mở trang tải", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
+        var btnWeb = CreateThemedButton("Tải AnhdvTools: Chọn nơi lưu & mở trang tải", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
         btnWeb.Click += (_, _) =>
         {
             choiceForm.Close();
@@ -539,14 +539,14 @@ public class WinPeBootForm : Form
             CheckStatusOnInit();
         };
 
-        var btnExtract = CreateThemedButton("📦 Chọn file nén / ISO (.7z, .zip, .iso) để tự động giải nén", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
+        var btnExtract = CreateThemedButton("Chọn file nén / ISO (.7z, .zip, .iso) để giải nén", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
         btnExtract.Click += async (_, _) =>
         {
             choiceForm.Close();
             await ExtractAnhdvPackage();
         };
 
-        var btnPickFolder = CreateThemedButton("📁 Đã có sẵn thư mục AnhdvBoot trên máy (Chọn thư mục)", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
+        var btnPickFolder = CreateThemedButton("Đã có sẵn thư mục AnhdvBoot (Chọn thư mục)", _btnSand, _btnSandBorder, _textDark, FontStyle.Bold, 48);
         btnPickFolder.Click += (_, _) =>
         {
             choiceForm.Close();

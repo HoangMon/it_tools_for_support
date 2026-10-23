@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
@@ -82,7 +82,7 @@ public class BrowserBackupForm : Form
         var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 48, BackColor = Color.Transparent };
         var lblTitle = new Label
         {
-            Text = "🌐 SAO LƯU & KHÔI PHỤC BOOKMARK / PROFILE TRÌNH DUYỆT",
+            Text = "SAO LƯU & KHÔI PHỤC BOOKMARK / PROFILE TRÌNH DUYỆT",
             Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(0, 4),
@@ -107,7 +107,7 @@ public class BrowserBackupForm : Form
 
         var lblDestTitle = new Label
         {
-            Text = "📁 Thư mục lưu trữ bản sao lưu:",
+            Text = "Thư mục lưu trữ bản sao lưu:",
             Font = new Font("Segoe UI", 9f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(12, 8),
@@ -126,7 +126,7 @@ public class BrowserBackupForm : Form
 
         _btnBrowse = new Button
         {
-            Text = "📂 Đổi thư mục",
+            Text = "Đổi thư mục...",
             Size = new Size(115, 30),
             Location = new Point(pnlDestCard.Width - 245, 14),
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -140,7 +140,7 @@ public class BrowserBackupForm : Form
 
         _btnOpenFolder = new Button
         {
-            Text = "🌐 Mở thư mục",
+            Text = "Mở thư mục",
             Size = new Size(115, 30),
             Location = new Point(pnlDestCard.Width - 125, 14),
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -169,7 +169,7 @@ public class BrowserBackupForm : Form
 
         var lblBrowserHeader = new Label
         {
-            Text = "🔍 Danh sách trình duyệt phát hiện trên máy tính:",
+            Text = "Danh sách trình duyệt phát hiện trên hệ thống:",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Top,
@@ -207,9 +207,9 @@ public class BrowserBackupForm : Form
         var flowOpts = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, BackColor = Color.Transparent };
 
         var lblOptTitle = new Label { Text = "Mục sao lưu:", Font = new Font("Segoe UI", 9f, FontStyle.Bold), ForeColor = _textHeading, AutoSize = true, Margin = new Padding(0, 4, 16, 0) };
-        _chkBookmarks = new CheckBox { Text = "🔖 Dấu trang (Bookmarks / Favorites)", Checked = true, AutoSize = true, Font = new Font("Segoe UI", 9f), ForeColor = _textHeading, Margin = new Padding(0, 3, 20, 0) };
-        _chkHistory = new CheckBox { Text = "🕒 Lịch sử duyệt web (History)", Checked = true, AutoSize = true, Font = new Font("Segoe UI", 9f), ForeColor = _textHeading, Margin = new Padding(0, 3, 20, 0) };
-        _chkPreferences = new CheckBox { Text = "⚙️ Cấu hình & Tiện ích (Settings)", Checked = false, AutoSize = true, Font = new Font("Segoe UI", 9f), ForeColor = _textHeading, Margin = new Padding(0, 3, 10, 0) };
+        _chkBookmarks = new CheckBox { Text = "Dấu trang (Bookmarks / Favorites)", Checked = true, AutoSize = true, Font = new Font("Segoe UI", 9f), ForeColor = _textHeading, Margin = new Padding(0, 3, 20, 0) };
+        _chkHistory = new CheckBox { Text = "Lịch sử duyệt web (History)", Checked = true, AutoSize = true, Font = new Font("Segoe UI", 9f), ForeColor = _textHeading, Margin = new Padding(0, 3, 20, 0) };
+        _chkPreferences = new CheckBox { Text = "Cấu hình & Tiện ích (Settings)", Checked = false, AutoSize = true, Font = new Font("Segoe UI", 9f), ForeColor = _textHeading, Margin = new Padding(0, 3, 10, 0) };
 
         flowOpts.Controls.Add(lblOptTitle);
         flowOpts.Controls.Add(_chkBookmarks);
@@ -222,7 +222,7 @@ public class BrowserBackupForm : Form
         var pnlActions = new Panel { Dock = DockStyle.Top, Height = 48, BackColor = Color.Transparent, Padding = new Padding(0, 6, 0, 6) };
         _btnBackup = new Button
         {
-            Text = "📦 Bắt đầu Sao lưu (Backup to ZIP)",
+            Text = "Bắt đầu Sao lưu (Backup to ZIP)",
             Size = new Size(240, 36),
             Location = new Point(0, 6),
             BackColor = _primaryBlue,
@@ -236,7 +236,7 @@ public class BrowserBackupForm : Form
 
         _btnRestore = new Button
         {
-            Text = "🔄 Khôi phục Trình duyệt (Restore from ZIP)",
+            Text = "Khôi phục Trình duyệt (Restore from ZIP)",
             Size = new Size(270, 36),
             Location = new Point(250, 6),
             BackColor = _btnBg,
@@ -345,7 +345,7 @@ public class BrowserBackupForm : Form
             {
                 b.IsDetected = true;
                 b.CheckBox.Checked = true;
-                b.StatusLabel.Text = $"✅ Đã phát hiện profile ({b.ProfilePath})";
+                b.StatusLabel.Text = $"[OK] Đã phát hiện profile ({b.ProfilePath})";
                 b.StatusLabel.ForeColor = _successGreen;
             }
             else
@@ -353,7 +353,7 @@ public class BrowserBackupForm : Form
                 b.IsDetected = false;
                 b.CheckBox.Checked = false;
                 b.CheckBox.Enabled = false;
-                b.StatusLabel.Text = "❌ Chưa cài đặt hoặc không tìm thấy profile.";
+                b.StatusLabel.Text = "[Chưa có] Chưa cài đặt hoặc không tìm thấy profile.";
                 b.StatusLabel.ForeColor = _textMuted;
             }
         }
@@ -396,7 +396,7 @@ public class BrowserBackupForm : Form
         _lblStatus.Text = "Đang sao lưu...";
 
         Log($"════════════════════════════════════════════════════════════");
-        Log($"🚀 BẮT ĐẦU SAO LƯU TRÌNH DUYỆT VÀO: {zipFileName}");
+        Log($"[BẮT ĐẦU] Sao lưu TRÌNH DUYỆT VÀO: {zipFileName}");
 
         await Task.Run(() =>
         {
@@ -423,12 +423,12 @@ public class BrowserBackupForm : Form
                     }
                 }
 
-                Log($"📦 Đang nén toàn bộ dữ liệu vào tệp ZIP: {zipPath}...");
+                Log($"Đang nén toàn bộ dữ liệu vào tệp ZIP: {zipPath}...");
                 if (File.Exists(zipPath)) File.Delete(zipPath);
                 ZipFile.CreateFromDirectory(tempFolder, zipPath, CompressionLevel.Optimal, false);
 
                 var fi = new FileInfo(zipPath);
-                Log($"🎉 SAO LƯU HOÀN TẤT THÀNH CÔNG!");
+                Log($"[HOÀN TẤT] Sao lưu thành công THÀNH CÔNG!");
                 Log($"  -> Đường dẫn: {zipPath}");
                 Log($"  -> Kích thước tệp: {(fi.Length / 1024.0 / 1024.0):F2} MB");
 
@@ -441,7 +441,7 @@ public class BrowserBackupForm : Form
             }
             catch (Exception ex)
             {
-                Log($"❌ Lỗi sao lưu: {ex.Message}");
+                Log($"[Lỗi] Sao lưu thất bại: {ex.Message}");
                 Invoke(() => MessageBox.Show($"Lỗi sao lưu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error));
             }
             finally
@@ -547,7 +547,7 @@ public class BrowserBackupForm : Form
         _progressBar.Value = 20;
 
         Log($"════════════════════════════════════════════════════════════");
-        Log($"🔄 BẮT ĐẦU PHỤC HỒI DỮ LIỆU TỪ: {Path.GetFileName(ofd.FileName)}");
+        Log($"[BẮT ĐẦU] Phục hồi dữ liệu DỮ LIỆU TỪ: {Path.GetFileName(ofd.FileName)}");
 
         await Task.Run(() =>
         {
@@ -575,7 +575,7 @@ public class BrowserBackupForm : Form
                     }
                 }
 
-                Log($"🎉 KHÔI PHỤC HOÀN TẤT THÀNH CÔNG CHO {restoredCount} TRÌNH DUYỆT!");
+                Log($"[HOÀN TẤT] Khôi phục thành công THÀNH CÔNG CHO {restoredCount} TRÌNH DUYỆT!");
                 Invoke(() =>
                 {
                     _progressBar.Value = 100;
@@ -585,7 +585,7 @@ public class BrowserBackupForm : Form
             }
             catch (Exception ex)
             {
-                Log($"❌ Lỗi khôi phục: {ex.Message}");
+                Log($"[Lỗi] Khôi phục thất bại: {ex.Message}");
                 Invoke(() => MessageBox.Show($"Lỗi khôi phục: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error));
             }
             finally

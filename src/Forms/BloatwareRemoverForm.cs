@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net.Http;
@@ -214,7 +214,7 @@ public class BloatwareRemoverForm : Form
         // Header: "📦 App & Công cụ" and "[ ] Tất cả"
         var lblTitle = new Label
         {
-            Text = "📦  App & Công cụ",
+            Text = "Ứng dụng mặc định & Công cụ (UWP Apps)",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(14, 10),
@@ -316,7 +316,7 @@ public class BloatwareRemoverForm : Form
 
         _chkPreventReinstall = new CheckBox
         {
-            Text = "🚫 Chặn tự cài lại Bloatware",
+            Text = "Chặn tự động tải lại Bloatware",
             Font = new Font("Segoe UI", 9.25f),
             ForeColor = _textHeading,
             Location = new Point(col1X, bottomY + 5),
@@ -325,7 +325,7 @@ public class BloatwareRemoverForm : Form
         };
         card.Controls.Add(_chkPreventReinstall);
 
-        _btnStartBloatware = CreateStyledButton("🗑️ Bắt đầu", new Point(col2X, bottomY), new Size(230, 36), true);
+        _btnStartBloatware = CreateStyledButton("Bắt đầu gỡ bỏ", new Point(col2X, bottomY), new Size(230, 36), true);
         _btnStartBloatware.Click += async (_, _) => await RemoveSelectedBloatwareAsync();
         card.Controls.Add(_btnStartBloatware);
 
@@ -349,7 +349,7 @@ public class BloatwareRemoverForm : Form
         // Header
         var lblTitle = new Label
         {
-            Text = "🛡️  Phần mềm hãng cài sẵn",
+            Text = "Phần mềm nhà sản xuất (OEM Software)",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(14, 10),
@@ -404,13 +404,13 @@ public class BloatwareRemoverForm : Form
 
         // Button 1: Gỡ mục đã chọn
         int btn1Y = itemY + 80;
-        _btnStartOem = CreateStyledButton("🛡️ Gỡ mục đã chọn", new Point(14, btn1Y), new Size(285, 36), true);
+        _btnStartOem = CreateStyledButton("Gỡ bỏ mục đã chọn", new Point(14, btn1Y), new Size(285, 36), true);
         _btnStartOem.Click += async (_, _) => await RemoveSelectedOemAsync();
         card.Controls.Add(_btnStartOem);
 
         // Button 2: Gỡ nhiều phần mềm khác...
         int btn2Y = btn1Y + 42;
-        _btnOpenBatch = CreateStyledButton("📑 Gỡ nhiều phần mềm khác...", new Point(14, btn2Y), new Size(285, 36), false);
+        _btnOpenBatch = CreateStyledButton("Gỡ phần mềm hàng loạt (Control Panel)...", new Point(14, btn2Y), new Size(285, 36), false);
         _btnOpenBatch.Click += (_, _) =>
         {
             try
@@ -858,7 +858,7 @@ $pkgs | Sort-Object -Unique | Out-String", Encoding.UTF8);
         }
 
         _btnStartBloatware.Enabled = true;
-        _btnStartBloatware.Text = "🗑️ Bắt đầu";
+        _btnStartBloatware.Text = "Bắt đầu gỡ bỏ";
 
         await LoadStatusAsync();
     }
@@ -985,7 +985,7 @@ $pkgs | Sort-Object -Unique | Out-String", Encoding.UTF8);
         }
 
         _btnStartOem.Enabled = true;
-        _btnStartOem.Text = "🛡️ Gỡ mục đã chọn";
+        _btnStartOem.Text = "Gỡ bỏ mục đã chọn";
 
         await LoadStatusAsync();
     }

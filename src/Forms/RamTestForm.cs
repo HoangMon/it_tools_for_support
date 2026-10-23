@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -25,7 +25,7 @@ public class RamTestForm : Form
 
     public RamTestForm()
     {
-        Text = "🧠 Kiểm tra RAM (Quét nhật ký lỗi + Test ghi/đọc từng byte)";
+        Text = "Kiểm tra Bộ nhớ RAM (RAM Diagnostics)";
         Size = new Size(880, 680);
         MinimumSize = new Size(800, 600);
         StartPosition = FormStartPosition.CenterParent;
@@ -57,7 +57,7 @@ public class RamTestForm : Form
 
         var lblTitle = new Label
         {
-            Text = "🧠 Kiểm tra RAM không cần khởi động lại (Hỗ trợ cả Windows & WinPE)",
+            Text = "Kiểm tra RAM trực tiếp (Hỗ trợ cả Windows & WinPE)",
             Font = new Font("Segoe UI", 11.25f, FontStyle.Bold),
             ForeColor = ThemeHelper.TextHeading,
             AutoSize = true,
@@ -134,7 +134,7 @@ public class RamTestForm : Form
 
         _btnMdsched = new Button
         {
-            Text = "🛠️ Windows Memory Diagnostic",
+            Text = "Windows Memory Diagnostic (Khởi động lại để test)",
             Location = new Point(pnlTop.Width - 250, 63),
             Size = new Size(230, 32),
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -283,11 +283,11 @@ public class RamTestForm : Form
                 p.WaitForExit(3000);
                 if (string.IsNullOrWhiteSpace(text))
                 {
-                    Log("✅ Không phát hiện lỗi phần cứng bộ nhớ trong Event Log (WHEA sạch).");
+                    Log("[OK] Không phát hiện lỗi phần cứng bộ nhớ trong Event Log (WHEA sạch).");
                 }
                 else
                 {
-                    Log("⚠️ Phát hiện một số sự kiện WHEA/Crash gần đây:");
+                    Log("[Cảnh báo] Phát hiện một số sự kiện WHEA/Crash gần đây:");
                     var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var line in lines.Take(10))
                     {
@@ -351,7 +351,7 @@ public class RamTestForm : Form
                 }
                 catch (OutOfMemoryException)
                 {
-                    Log("⚠️ Không thể cấp phát đủ lượng RAM yêu cầu, hệ thống sẽ test lượng RAM hiện có.");
+                    Log("[Cảnh báo] Không thể cấp phát đủ lượng RAM yêu cầu, hệ thống sẽ test lượng RAM hiện có.");
                 }
 
                 if (chunks.Count == 0) return;
@@ -422,7 +422,7 @@ public class RamTestForm : Form
                 _prgBar.Value = 100;
                 if (errorCount == 0)
                 {
-                    _lblStatus.Text = "✅ Hoàn tất! RAM hoàn toàn khỏe mạnh (0 lỗi).";
+                    _lblStatus.Text = "[Hoàn tất] RAM hoàn toàn khỏe mạnh (0 lỗi).";
                     _lblErrors.Text = "Lỗi phát hiện (Bit Flips): 0 (HOÀN HẢO)";
                     _lblErrors.ForeColor = ThemeHelper.SuccessGreen;
                     Log($"==========================================================");
@@ -432,10 +432,10 @@ public class RamTestForm : Form
                 }
                 else
                 {
-                    _lblStatus.Text = $"❌ Phát hiện {errorCount} lỗi ghi/đọc RAM!";
+                    _lblStatus.Text = $"[Lỗi] Phát hiện {errorCount} lỗi ghi/đọc RAM!";
                     _lblErrors.Text = $"Lỗi phát hiện (Bit Flips): {errorCount} (CẢNH BÁO)";
                     _lblErrors.ForeColor = ThemeHelper.DangerRed;
-                    Log($"❌ CẢNH BÁO: Phát hiện {errorCount} lỗi bit flips! Có thể thanh RAM bị bẩn chân cắm hoặc bị lỗi chip nhớ vật lý.");
+                    Log($"[CẢNH BÁO] Phát hiện {errorCount} lỗi bit flips! Có thể thanh RAM bị bẩn chân cắm hoặc bị lỗi chip nhớ vật lý.");
                     MessageBox.Show($"Cảnh báo: Phát hiện {errorCount} lỗi trong quá trình ghi/đọc RAM!\n\nVui lòng tháo RAM vệ sinh chân cắm hoặc thay thế thanh RAM lỗi.", "Phát hiện lỗi RAM", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }

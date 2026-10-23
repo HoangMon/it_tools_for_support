@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -47,7 +47,7 @@ public class BatchUninstallerForm : Form
 
     private void InitializeComponents()
     {
-        Text = "🧹 Gỡ nhiều phần mềm (Control Panel + App Settings)";
+        Text = "Gỡ Phần Mềm Hàng Loạt (Batch Uninstaller)";
         Size = new Size(980, 710);
         MinimumSize = new Size(920, 660);
         StartPosition = FormStartPosition.CenterParent;
@@ -127,7 +127,7 @@ public class BatchUninstallerForm : Form
 
         var lblTitle = new Label
         {
-            Text = "🧹 Gỡ nhiều phần mềm cùng lúc",
+            Text = "Gỡ nhiều phần mềm cùng lúc",
             Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(0, 2),
@@ -136,7 +136,7 @@ public class BatchUninstallerForm : Form
 
         _btnReload = new Button
         {
-            Text = "🔄 Đọc lại danh sách",
+            Text = "Quét lại danh sách",
             Size = new Size(160, 30),
             Location = new Point(pnl.Width - 160, 2),
             BackColor = _btnBg,
@@ -166,7 +166,7 @@ public class BatchUninstallerForm : Form
 
         var lblSearch = new Label
         {
-            Text = "🔍 Tìm:",
+            Text = "Tìm kiếm:",
             Location = new Point(0, 4),
             Size = new Size(52, 26),
             TextAlign = ContentAlignment.MiddleLeft,
@@ -338,7 +338,7 @@ public class BatchUninstallerForm : Form
 
         _btnUninstallSelected = new Button
         {
-            Text = "🗑️ Gỡ mục đã tích",
+            Text = "Gỡ bỏ các mục đã chọn",
             Size = new Size(140, 34),
             Location = new Point(pnl.Width - 142, 5),
             BackColor = _btnBg,
@@ -937,7 +937,7 @@ public class LeftoverCleanDialog : Form
 
     private void InitializeComponents()
     {
-        Text = "🧹 Dọn dẹp thư mục còn sót sau khi gỡ phần mềm";
+        Text = "Dọn dẹp thư mục còn sót sau khi gỡ phần mềm";
         Size = new Size(680, 420);
         StartPosition = FormStartPosition.CenterParent;
         BackColor = ThemeHelper.BgForm;
@@ -967,7 +967,7 @@ public class LeftoverCleanDialog : Form
         var bottomBar = new Panel { Dock = DockStyle.Bottom, Height = 48, Padding = new Padding(12, 8, 12, 8), BackColor = Color.Transparent };
         var btnDelete = new Button
         {
-            Text = "🗑️ Xóa các mục đã tích",
+            Text = "Xóa các mục đã chọn",
             Dock = DockStyle.Right,
             Width = 180,
             BackColor = Color.FromArgb(185, 28, 28),

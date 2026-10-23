@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -70,7 +70,7 @@ public class DataBackupForm : Form
 
     private void InitializeComponents()
     {
-        Text = "🛠️ Sao lưu Dữ liệu";
+        Text = "Sao lưu & Khôi phục Dữ liệu Người dùng (Data Backup & Restore)";
         Size = new Size(580, 480);
         MinimumSize = new Size(540, 460);
         StartPosition = FormStartPosition.CenterParent;
@@ -137,7 +137,7 @@ public class DataBackupForm : Form
     {
         var gb = new GroupBox
         {
-            Text = "📁 Chọn nơi lưu dữ liệu",
+            Text = "Thư mục lưu trữ sao lưu",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             BackColor = Color.Transparent,
@@ -146,7 +146,7 @@ public class DataBackupForm : Form
 
         _btnBrowse = new Button
         {
-            Text = "📁 Chọn...",
+            Text = "Duyệt thư mục...",
             Location = new Point(16, 28),
             Size = new Size(100, 36),
             BackColor = _btnBg,
@@ -179,7 +179,7 @@ public class DataBackupForm : Form
     {
         var gb = new GroupBox
         {
-            Text = "📦 Chọn thư mục cần sao lưu",
+            Text = "Danh mục thư mục người dùng cần sao lưu",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             BackColor = Color.Transparent,
@@ -205,7 +205,7 @@ public class DataBackupForm : Form
         // Column 1
         _chkDesktop = new CheckBox
         {
-            Text = "🖥️  Desktop",
+            Text = "Desktop (Bàn làm việc)",
             Font = fontCheck,
             ForeColor = _textHeading,
             Checked = true,
@@ -214,7 +214,7 @@ public class DataBackupForm : Form
         };
         _chkDocuments = new CheckBox
         {
-            Text = "📄  Documents",
+            Text = "Documents (Tài liệu)",
             Font = fontCheck,
             ForeColor = _textHeading,
             Checked = true,
@@ -223,7 +223,7 @@ public class DataBackupForm : Form
         };
         _chkDownloads = new CheckBox
         {
-            Text = "📥  Downloads",
+            Text = "Downloads (Tải về)",
             Font = fontCheck,
             ForeColor = _textHeading,
             Checked = true,
@@ -234,7 +234,7 @@ public class DataBackupForm : Form
         // Column 2
         _chkPictures = new CheckBox
         {
-            Text = "🖼️  Pictures",
+            Text = "Pictures (Hình ảnh)",
             Font = fontCheck,
             ForeColor = _textHeading,
             Checked = true,
@@ -252,7 +252,7 @@ public class DataBackupForm : Form
         };
         _chkVideos = new CheckBox
         {
-            Text = "🎬  Videos",
+            Text = "Videos (Phim / Video)",
             Font = fontCheck,
             ForeColor = _textHeading,
             Checked = false,
@@ -387,7 +387,7 @@ public class DataBackupForm : Form
 
         _btnFonts = new Button
         {
-            Text = "✍️ Sao lưu / Khôi phục font chữ",
+            Text = "Sao lưu / Khôi phục Font chữ",
             Size = new Size(270, 38),
             BackColor = _btnBg,
             ForeColor = _textHeading,
@@ -497,7 +497,7 @@ public class DataBackupForm : Form
         if (_isWorking && _cts != null)
         {
             _cts.Cancel();
-            SetStatus("⚠️ Đang yêu cầu dừng tiến trình...");
+            SetStatus("[Thông báo] Đang yêu cầu dừng tiến trình...");
         }
     }
 
@@ -615,18 +615,18 @@ public class DataBackupForm : Form
 
             if (ct.IsCancellationRequested)
             {
-                SetStatus($"⚠️ Đã dừng sao lưu theo yêu cầu. Đã lưu {totalCopiedFiles} tệp.", 0);
+                SetStatus($"[Thông báo] Đã dừng sao lưu theo yêu cầu. Đã lưu {totalCopiedFiles} tệp.", 0);
                 MessageBox.Show($"Quá trình sao lưu đã được dừng lại theo yêu cầu của bạn!\nĐã sao lưu được {totalCopiedFiles} tệp tin.", "Đã Dừng", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 double totalMb = totalBytes / (1024.0 * 1024.0);
-                SetStatus($"✅ Đã sao lưu hoàn tất! Tổng cộng {totalCopiedFiles} tệp ({totalMb:F1} MB).", 100);
+                SetStatus($"[Hoàn tất] Đã sao lưu hoàn tất! Tổng cộng {totalCopiedFiles} tệp ({totalMb:F1} MB).", 100);
 
                 var res = MessageBox.Show(
                     $"Đã sao lưu dữ liệu cá nhân thành công!\n\n" +
-                    $"📁 Thư mục lưu trữ: {finalTarget}\n" +
-                    $"📄 Tổng số tệp tin: {totalCopiedFiles} tệp ({totalMb:F1} MB)\n\n" +
+                    $"Thư mục lưu trữ: {finalTarget}\n" +
+                    $"Tổng số tệp tin: {totalCopiedFiles} tệp ({totalMb:F1} MB)\n\n" +
                     $"Bạn có muốn mở thư mục sao lưu ngay bây giờ không?",
                     "Sao Lưu Hoàn Tất",
                     MessageBoxButtons.YesNo,
@@ -640,7 +640,7 @@ public class DataBackupForm : Form
         }
         catch (Exception ex)
         {
-            SetStatus($"❌ Lỗi: {ex.Message}", 0);
+            SetStatus($"[Lỗi] {ex.Message}", 0);
             MessageBox.Show($"Xảy ra lỗi trong quá trình sao lưu: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally
@@ -775,17 +775,17 @@ public class DataBackupForm : Form
 
             if (ct.IsCancellationRequested)
             {
-                SetStatus($"⚠️ Đã dừng khôi phục theo yêu cầu. Đã chép {totalRestored} tệp.", 0);
+                SetStatus($"[Thông báo] Đã dừng khôi phục theo yêu cầu. Đã chép {totalRestored} tệp.", 0);
             }
             else
             {
-                SetStatus($"✅ Đã khôi phục thành công {totalRestored} tệp vào hệ thống!", 100);
+                SetStatus($"[Hoàn tất] Đã khôi phục thành công {totalRestored} tệp vào hệ thống!", 100);
                 MessageBox.Show($"Đã khôi phục thành công {totalRestored} tệp tin vào máy tính!", "Khôi Phục Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         catch (Exception ex)
         {
-            SetStatus($"❌ Lỗi: {ex.Message}", 0);
+            SetStatus($"[Lỗi] {ex.Message}", 0);
             MessageBox.Show($"Lỗi trong quá trình khôi phục: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally
@@ -799,11 +799,11 @@ public class DataBackupForm : Form
     private void ShowFontsMenu()
     {
         var menu = new ContextMenuStrip();
-        var itemBackupFonts = menu.Items.Add("📤 1. Sao lưu toàn bộ Font chữ ra thư mục đích");
+        var itemBackupFonts = menu.Items.Add("1. Sao lưu toàn bộ Font chữ ra thư mục đích");
         itemBackupFonts.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
         itemBackupFonts.Click += async (_, _) => await BackupFontsAsync();
 
-        var itemRestoreFonts = menu.Items.Add("📥 2. Khôi phục / Cài đặt Font chữ từ thư mục");
+        var itemRestoreFonts = menu.Items.Add("2. Khôi phục / Cài đặt Font chữ từ thư mục");
         itemRestoreFonts.Font = new Font("Segoe UI", 9.5f, FontStyle.Bold);
         itemRestoreFonts.Click += async (_, _) => await RestoreFontsAsync();
 
@@ -887,11 +887,11 @@ public class DataBackupForm : Form
 
             if (ct.IsCancellationRequested)
             {
-                SetStatus($"⚠️ Đã dừng sao lưu Font. Đã lưu {copiedCount} font.", 0);
+                SetStatus($"[Thông báo] Đã dừng sao lưu Font. Đã lưu {copiedCount} font.", 0);
             }
             else
             {
-                SetStatus($"✅ Đã sao lưu thành công {copiedCount} font chữ vào {fontsTarget}", 100);
+                SetStatus($"[Hoàn tất] Đã sao lưu thành công {copiedCount} font chữ vào {fontsTarget}", 100);
                 var res = MessageBox.Show(
                     $"Đã sao lưu thành công {copiedCount} font chữ vào thư mục:\n{fontsTarget}\n\nBạn có muốn mở thư mục ngay bây giờ không?",
                     "Sao Lưu Font Thành Công",
@@ -997,11 +997,11 @@ public class DataBackupForm : Form
 
             if (ct.IsCancellationRequested)
             {
-                SetStatus($"⚠️ Đã dừng cài đặt font theo yêu cầu. Đã cài {installedCount} font.", 0);
+                SetStatus($"[Thông báo] Đã dừng cài đặt font theo yêu cầu. Đã cài {installedCount} font.", 0);
             }
             else
             {
-                SetStatus($"✅ Đã cài đặt thành công {installedCount} font chữ vào hệ thống!", 100);
+                SetStatus($"[Hoàn tất] Đã cài đặt thành công {installedCount} font chữ vào hệ thống!", 100);
                 MessageBox.Show($"Đã cài đặt thành công {installedCount} font chữ vào hệ thống Windows!", "Cài Đặt Font Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }

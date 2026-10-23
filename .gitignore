@@ -73,3 +73,7 @@ project.lock.json
 project.assets.json
 *.nuget.props
 *.nuget.targets
+
+# Skill & local staging
+ui-ux-pro-max-skill*/
+bin_new/

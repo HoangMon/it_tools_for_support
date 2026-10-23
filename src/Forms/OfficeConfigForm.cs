@@ -32,6 +32,7 @@ public class OfficeConfigForm : Form
     public OfficeConfigForm()
     {
         InitializeComponents();
+        ThemeHelper.ApplyTheme(this);
         DetectOfficeInstallation();
     }
 
@@ -57,7 +58,7 @@ public class OfficeConfigForm : Form
         var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 56, BackColor = Color.Transparent };
         var lblTitle = new Label
         {
-            Text = "📄 THIẾT LẬP & XỬ LÝ SỰ CỐ MICROSOFT OFFICE",
+            Text = "THIẾT LẬP & XỬ LÝ SỰ CỐ MICROSOFT OFFICE",
             Font = new Font("Segoe UI", 12f, FontStyle.Bold),
             ForeColor = _textHeading,
             AutoSize = true,
@@ -180,10 +181,18 @@ public class OfficeConfigForm : Form
         };
 
         var btnCheckStatus = CreateStyledButton("🔍 Kiểm tra bản quyền (OSPP /dstatus)", 16, 92, 240, 36, _primaryBlue, Color.White);
-        btnCheckStatus.Click += async (_, _) => await RunOsppStatusAsync();
+        btnCheckStatus.Click += async (_, _) =>
+        {
+            try { await RunOsppStatusAsync(); }
+            catch (Exception ex) { Log($"[Lỗi kiểm tra]: {ex.Message}"); }
+        };
 
-        var btnRefreshInfo = CreateStyledButton("🔄 Quét lại Office", 264, 92, 140, 36, _btnBg, _textHeading);
-        btnRefreshInfo.Click += (_, _) => DetectOfficeInstallation();
+        var btnRefreshInfo = CreateStyledButton("Quét lại thông tin", 264, 92, 140, 36, _btnBg, _textHeading);
+        btnRefreshInfo.Click += (_, _) =>
+        {
+            try { DetectOfficeInstallation(); }
+            catch (Exception ex) { Log($"[Lỗi quét Office]: {ex.Message}"); }
+        };
 
         cardStatus.Controls.Add(_lblOfficeVersion);
         cardStatus.Controls.Add(_lblLicenseStatus);
@@ -191,7 +200,7 @@ public class OfficeConfigForm : Form
         cardStatus.Controls.Add(btnRefreshInfo);
 
         // Card 2: Quản lý Product Key & KMS
-        var cardKey = CreateCard("🔑 Quản lý Product Key & Kích hoạt", ref y, 190, container);
+        var cardKey = CreateCard("Quản lý Product Key & Bản quyền", ref y, 190, container);
 
         var lblSelectKey = new Label
         {
@@ -210,8 +219,8 @@ public class OfficeConfigForm : Form
         };
         _cboDetectedKeys.SelectedIndexChanged += (_, _) =>
         {
-            if (_cboDetectedKeys.SelectedItem != null)
-                _txtUnpkey.Text = _cboDetectedKeys.SelectedItem.ToString();
+            if (_cboDetectedKeys?.SelectedItem != null && _txtUnpkey != null)
+                _txtUnpkey.Text = _cboDetectedKeys.SelectedItem.ToString() ?? "";
         };
 
         var lblOrManual = new Label
@@ -233,7 +242,11 @@ public class OfficeConfigForm : Form
         };
 
         var btnUninstallKey = CreateStyledButton("🗑️ Gỡ bỏ Key này (/unpkey)", 288, 54, 150, 30, _dangerRed, Color.White);
-        btnUninstallKey.Click += async (_, _) => await UninstallProductKeyAsync();
+        btnUninstallKey.Click += async (_, _) =>
+        {
+            try { await UninstallProductKeyAsync(); }
+            catch (Exception ex) { Log($"[Lỗi gỡ key]: {ex.Message}"); }
+        };
 
         var lblKms = new Label
         {
@@ -251,11 +264,19 @@ public class OfficeConfigForm : Form
             ForeColor = _textHeading
         };
 
-        var btnSetKms = CreateStyledButton("🌐 Gán KMS Host", 254, 116, 115, 28, _btnBg, _textHeading);
-        btnSetKms.Click += async (_, _) => await SetKmsServerAsync();
+        var btnSetKms = CreateStyledButton("Gán KMS Host", 254, 116, 115, 28, _btnBg, _textHeading);
+        btnSetKms.Click += async (_, _) =>
+        {
+            try { await SetKmsServerAsync(); }
+            catch (Exception ex) { Log($"[Lỗi gán KMS]: {ex.Message}"); }
+        };
 
-        var btnActivate = CreateStyledButton("⚡ Kích hoạt lại Office (/act)", 16, 152, 230, 32, _successGreen, Color.White);
-        btnActivate.Click += async (_, _) => await ActivateOfficeAsync();
+        var btnActivate = CreateStyledButton("Kích hoạt Office (/act)", 16, 152, 230, 32, _successGreen, Color.White);
+        btnActivate.Click += async (_, _) =>
+        {
+            try { await ActivateOfficeAsync(); }
+            catch (Exception ex) { Log($"[Lỗi kích hoạt]: {ex.Message}"); }
+        };
 
         cardKey.Controls.Add(lblSelectKey);
         cardKey.Controls.Add(_cboDetectedKeys);
@@ -268,9 +289,9 @@ public class OfficeConfigForm : Form
         cardKey.Controls.Add(btnActivate);
 
         // Card 3: Xử lý sự cố & Xóa Token lỗi
-        var cardFix = CreateCard("🛠️ Xử lý Sự cố & Dọn Cache Tài khoản", ref y, 160, container);
+        var cardFix = CreateCard("Xử lý sự cố & Dọn Cache tài khoản", ref y, 160, container);
 
-        var btnClearToken = CreateStyledButton("🧹 Xóa Cache Token kích hoạt lỗi", 16, 36, 210, 34, _btnBg, _textHeading);
+        var btnClearToken = CreateStyledButton("Xóa Cache Token kích hoạt lỗi", 16, 36, 210, 34, _btnBg, _textHeading);
         btnClearToken.Click += (_, _) => ClearOfficeLicensingTokens();
 
         var btnResetAccount = CreateStyledButton("👤 Xóa Tài khoản đăng nhập bị kẹt", 236, 36, 205, 34, _btnBg, _textHeading);
@@ -279,10 +300,10 @@ public class OfficeConfigForm : Form
         var btnQuickRepair = CreateStyledButton("🔧 Chạy sửa lỗi nhanh (Quick Repair)", 16, 78, 210, 34, _btnBg, _textHeading);
         btnQuickRepair.Click += (_, _) => LaunchOfficeRepair(true);
 
-        var btnOnlineRepair = CreateStyledButton("🌐 Chạy sửa lỗi trực tuyến (Online Repair)", 236, 78, 205, 34, _btnBg, _textHeading);
+        var btnOnlineRepair = CreateStyledButton("Sửa lỗi trực tuyến (Online Repair)", 236, 78, 205, 34, _btnBg, _textHeading);
         btnOnlineRepair.Click += (_, _) => LaunchOfficeRepair(false);
 
-        var btnOpenAppwiz = CreateStyledButton("📦 Mở Control Panel gỡ / sửa Office", 16, 120, 425, 30, _btnBg, _textHeading);
+        var btnOpenAppwiz = CreateStyledButton("Mở Control Panel gỡ / sửa Office", 16, 120, 425, 30, _btnBg, _textHeading);
         btnOpenAppwiz.Click += (_, _) => Process.Start(new ProcessStartInfo("control.exe", "appwiz.cpl") { UseShellExecute = true });
 
         cardFix.Controls.Add(btnClearToken);
@@ -292,7 +313,7 @@ public class OfficeConfigForm : Form
         cardFix.Controls.Add(btnOpenAppwiz);
 
         // Card 4: Tinh chỉnh giao diện & Cấu hình chuẩn
-        var cardTweak = CreateCard("⚙️ Tinh chỉnh & Chuẩn hóa Cấu hình", ref y, 120, container);
+        var cardTweak = CreateCard("Tinh chỉnh cấu hình & Font mặc định", ref y, 120, container);
 
         var btnFixFont = CreateStyledButton("📝 Chuẩn hóa Font Word (Times New Roman 13pt)", 16, 36, 425, 32, _btnBg, _textHeading);
         btnFixFont.Click += (_, _) => StandardizeWordFont();
@@ -381,26 +402,36 @@ public class OfficeConfigForm : Form
 
     private void DetectOfficeInstallation()
     {
-        var ospp = FindOsppVbsPath();
-        if (ospp != null)
+        try
         {
-            string folder = Path.GetDirectoryName(ospp) ?? "";
-            _lblOfficeVersion.Text = $"Phát hiện: {folder}";
-            _lblOfficeVersion.ForeColor = _successGreen;
-            Log($"[Hệ thống] Tìm thấy OSPP.VBS tại: {ospp}");
+            var ospp = FindOsppVbsPath();
+            if (_lblOfficeVersion != null)
+            {
+                if (ospp != null)
+                {
+                    string folder = Path.GetDirectoryName(ospp) ?? "";
+                    _lblOfficeVersion.Text = $"Phát hiện: {folder}";
+                    _lblOfficeVersion.ForeColor = _successGreen;
+                    Log($"[Hệ thống] Tìm thấy OSPP.VBS tại: {ospp}");
+                }
+                else
+                {
+                    _lblOfficeVersion.Text = "Không tìm thấy OSPP.VBS (Có thể dùng bản Web hoặc chưa cài)";
+                    _lblOfficeVersion.ForeColor = _dangerRed;
+                    Log("[Cảnh báo] Không tìm thấy file OSPP.VBS trong các thư mục Office tiêu chuẩn.");
+                }
+            }
         }
-        else
+        catch (Exception ex)
         {
-            _lblOfficeVersion.Text = "Không tìm thấy OSPP.VBS (Có thể dùng bản Web hoặc chưa cài)";
-            _lblOfficeVersion.ForeColor = _dangerRed;
-            Log("[Cảnh báo] Không tìm thấy file OSPP.VBS trong các thư mục Office tiêu chuẩn.");
+            Log($"[Lỗi quét Office]: {ex.Message}");
         }
     }
 
     private async Task<string> ExecuteCscriptAsync(string arguments)
     {
         var ospp = FindOsppVbsPath();
-        if (ospp == null)
+        if (string.IsNullOrEmpty(ospp) || !File.Exists(ospp))
         {
             Log("[Lỗi] Không tìm thấy OSPP.VBS trên máy này!");
             MessageBox.Show("Không tìm thấy bộ quản lý bản quyền OSPP.VBS của Microsoft Office trên máy tính này.", "Không Tìm Thấy Office", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -410,148 +441,210 @@ public class OfficeConfigForm : Form
         SetBusy(true);
         Log($"[Chạy] cscript.exe //nologo \"{ospp}\" {arguments}");
 
-        return await Task.Run(() =>
+        try
         {
-            try
+            return await Task.Run(() =>
             {
-                var psi = new ProcessStartInfo
+                try
                 {
-                    FileName = Path.Combine(Environment.SystemDirectory, "cscript.exe"),
-                    Arguments = $"//nologo \"{ospp}\" {arguments}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = Path.Combine(Environment.SystemDirectory, "cscript.exe"),
+                        Arguments = $"//nologo \"{ospp}\" {arguments}",
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    };
 
-                using var p = Process.Start(psi);
-                if (p == null) return "Không thể khởi động cscript.exe";
+                    using var p = Process.Start(psi);
+                    if (p == null) return "Không thể khởi động cscript.exe";
 
-                string stdout = p.StandardOutput.ReadToEnd();
-                string stderr = p.StandardError.ReadToEnd();
-                p.WaitForExit(30000);
+                    string stdout = p.StandardOutput.ReadToEnd();
+                    string stderr = p.StandardError.ReadToEnd();
+                    p.WaitForExit(30000);
 
-                string result = (stdout + "\n" + stderr).Trim();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return $"Lỗi thực thi: {ex.Message}";
-            }
-            finally
-            {
-                Invoke(() => SetBusy(false));
-            }
-        });
+                    return (stdout + "\n" + stderr).Trim();
+                }
+                catch (Exception ex)
+                {
+                    return $"Lỗi thực thi: {ex.Message}";
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi ngoại lệ Task]: {ex.Message}");
+            return $"Lỗi: {ex.Message}";
+        }
+        finally
+        {
+            SetBusy(false);
+        }
     }
 
     private async Task RunOsppStatusAsync()
     {
-        _cboDetectedKeys.Items.Clear();
-        var output = await ExecuteCscriptAsync("/dstatus");
-        Log(output);
-
-        if (output.Contains("---LICENSED---"))
+        try
         {
-            _lblLicenseStatus.Text = "Trạng thái: ✅ ĐÃ KÍCH HOẠT THÀNH CÔNG (LICENSED)";
-            _lblLicenseStatus.ForeColor = _successGreen;
-        }
-        else if (output.Contains("---NOTIFICATIONS---"))
-        {
-            _lblLicenseStatus.Text = "Trạng thái: ⚠️ HẾT HẠN / CẦN KÍCH HOẠT (NOTIFICATIONS)";
-            _lblLicenseStatus.ForeColor = _dangerRed;
-        }
-        else if (output.Contains("---GRACE---"))
-        {
-            _lblLicenseStatus.Text = "Trạng thái: ⏳ ĐANG DÙNG THỬ (GRACE PERIOD)";
-            _lblLicenseStatus.ForeColor = Color.Orange;
-        }
-        else
-        {
-            _lblLicenseStatus.Text = "Trạng thái: Chưa rõ (Xem chi tiết nhật ký bên phải)";
-            _lblLicenseStatus.ForeColor = _textHeading;
-        }
-
-        // Parse last 5 characters
-        var regex = new Regex(@"Last 5 characters of installed product key:\s*([A-Z0-9]{5})", RegexOptions.IgnoreCase);
-        var matches = regex.Matches(output);
-        foreach (Match m in matches)
-        {
-            if (m.Groups.Count > 1)
+            if (_cboDetectedKeys != null)
             {
-                string key = m.Groups[1].Value.ToUpper();
-                if (!_cboDetectedKeys.Items.Contains(key))
+                _cboDetectedKeys.Items.Clear();
+            }
+
+            var output = await ExecuteCscriptAsync("/dstatus");
+            if (string.IsNullOrWhiteSpace(output))
+            {
+                if (_lblLicenseStatus != null)
                 {
-                    _cboDetectedKeys.Items.Add(key);
+                    _lblLicenseStatus.Text = "Trạng thái: Không nhận được phản hồi từ OSPP";
+                    _lblLicenseStatus.ForeColor = _textMuted;
+                }
+                return;
+            }
+
+            Log(output);
+
+            if (_lblLicenseStatus != null)
+            {
+                if (output.Contains("---LICENSED---"))
+                {
+                    _lblLicenseStatus.Text = "Trạng thái: ✅ ĐÃ KÍCH HOẠT THÀNH CÔNG (LICENSED)";
+                    _lblLicenseStatus.ForeColor = _successGreen;
+                }
+                else if (output.Contains("---NOTIFICATIONS---"))
+                {
+                    _lblLicenseStatus.Text = "Trạng thái: ⚠️ HẾT HẠN / CẦN KÍCH HOẠT (NOTIFICATIONS)";
+                    _lblLicenseStatus.ForeColor = _dangerRed;
+                }
+                else if (output.Contains("---GRACE---"))
+                {
+                    _lblLicenseStatus.Text = "Trạng thái: ⏳ ĐANG DÙNG THỬ (GRACE PERIOD)";
+                    _lblLicenseStatus.ForeColor = Color.Orange;
+                }
+                else
+                {
+                    _lblLicenseStatus.Text = "Trạng thái: Chưa rõ (Xem chi tiết nhật ký bên phải)";
+                    _lblLicenseStatus.ForeColor = _textHeading;
+                }
+            }
+
+            // Parse last 5 characters
+            var regex = new Regex(@"Last 5 characters of installed product key:\s*([A-Z0-9]{5})", RegexOptions.IgnoreCase);
+            var matches = regex.Matches(output);
+            if (_cboDetectedKeys != null)
+            {
+                foreach (Match m in matches)
+                {
+                    if (m != null && m.Groups.Count > 1 && !string.IsNullOrEmpty(m.Groups[1].Value))
+                    {
+                        string key = m.Groups[1].Value.ToUpper();
+                        if (!_cboDetectedKeys.Items.Contains(key))
+                        {
+                            _cboDetectedKeys.Items.Add(key);
+                        }
+                    }
+                }
+
+                if (_cboDetectedKeys.Items.Count > 0)
+                {
+                    _cboDetectedKeys.SelectedIndex = 0;
+                    Log($"[Nhận diện] Đã tìm thấy {_cboDetectedKeys.Items.Count} Product Key đang gắn trên máy.");
+                }
+                else
+                {
+                    Log("[Nhận diện] Không tìm thấy Product Key nào trong trạng thái OSPP.");
                 }
             }
         }
-
-        if (_cboDetectedKeys.Items.Count > 0)
+        catch (Exception ex)
         {
-            _cboDetectedKeys.SelectedIndex = 0;
-            Log($"[Nhận diện] Đã tìm thấy {_cboDetectedKeys.Items.Count} Product Key đang gắn trên máy.");
-        }
-        else
-        {
-            Log("[Nhận diện] Không tìm thấy Product Key nào trong trạng thái OSPP.");
+            Log($"[Lỗi kiểm tra bản quyền]: {ex.Message}");
+            MessageBox.Show($"Xảy ra lỗi khi kiểm tra bản quyền Office:\n\n{ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
     private async Task UninstallProductKeyAsync()
     {
-        string key = _txtUnpkey.Text.Trim();
-        if (key.Length != 5)
+        try
         {
-            MessageBox.Show("Vui lòng nhập chính xác 5 ký tự cuối của Product Key cần gỡ bỏ!", "Lỗi Nhập Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
+            string key = _txtUnpkey?.Text?.Trim() ?? "";
+            if (key.Length != 5)
+            {
+                MessageBox.Show("Vui lòng nhập chính xác 5 ký tự cuối của Product Key cần gỡ bỏ!", "Lỗi Nhập Liệu", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var confirm = MessageBox.Show($"Bạn có chắc chắn muốn gỡ bỏ Product Key kết thúc bằng '{key}' không?\n\nThao tác này giúp xóa key cũ xung đột.", "Xác Nhận Gỡ Key", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (confirm != DialogResult.Yes) return;
+
+            var output = await ExecuteCscriptAsync($"/unpkey:{key}");
+            if (string.IsNullOrEmpty(output)) return;
+            Log(output);
+
+            if (output.Contains("Product key uninstall successful"))
+            {
+                MessageBox.Show($"Đã gỡ bỏ thành công Product Key '...{key}'!", "Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await RunOsppStatusAsync();
+            }
+            else
+            {
+                MessageBox.Show($"Kết quả gỡ key:\n{output}", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
-
-        var confirm = MessageBox.Show($"Bạn có chắc chắn muốn gỡ bỏ Product Key kết thúc bằng '{key}' không?\n\nThao tác này giúp xóa key cũ xung đột.", "Xác Nhận Gỡ Key", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-        if (confirm != DialogResult.Yes) return;
-
-        var output = await ExecuteCscriptAsync($"/unpkey:{key}");
-        Log(output);
-
-        if (output.Contains("Product key uninstall successful"))
+        catch (Exception ex)
         {
-            MessageBox.Show($"Đã gỡ bỏ thành công Product Key '...{key}'!", "Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            await RunOsppStatusAsync();
-        }
-        else
-        {
-            MessageBox.Show($"Kết quả gỡ key:\n{output}", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            Log($"[Lỗi gỡ Product Key]: {ex.Message}");
+            MessageBox.Show($"Lỗi gỡ Product Key: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
     private async Task SetKmsServerAsync()
     {
-        string server = _txtKmsServer.Text.Trim();
-        if (string.IsNullOrEmpty(server))
+        try
         {
-            MessageBox.Show("Vui lòng nhập địa chỉ máy chủ KMS (VD: kms8.msguides.com)!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            return;
-        }
+            string server = _txtKmsServer?.Text?.Trim() ?? "";
+            if (string.IsNullOrEmpty(server))
+            {
+                MessageBox.Show("Vui lòng nhập địa chỉ máy chủ KMS (VD: kms8.msguides.com)!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-        var output = await ExecuteCscriptAsync($"/sethst:{server}");
-        Log(output);
-        MessageBox.Show($"Đã cấu hình KMS Host: {server}\nXem log chi tiết bên cạnh.", "Gán KMS Host", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var output = await ExecuteCscriptAsync($"/sethst:{server}");
+            if (string.IsNullOrEmpty(output)) return;
+            Log(output);
+            MessageBox.Show($"Đã cấu hình KMS Host: {server}\nXem log chi tiết bên cạnh.", "Gán KMS Host", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi gán KMS Host]: {ex.Message}");
+            MessageBox.Show($"Lỗi gán KMS Host: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private async Task ActivateOfficeAsync()
     {
-        Log("[Kích hoạt] Đang gửi yêu cầu kích hoạt Office qua OSPP /act...");
-        var output = await ExecuteCscriptAsync("/act");
-        Log(output);
+        try
+        {
+            Log("[Kích hoạt] Đang gửi yêu cầu kích hoạt Office qua OSPP /act...");
+            var output = await ExecuteCscriptAsync("/act");
+            if (string.IsNullOrEmpty(output)) return;
+            Log(output);
 
-        if (output.Contains("Product activation successful"))
-        {
-            MessageBox.Show("🎉 Chúc mừng! Microsoft Office đã kích hoạt thành công (Product activation successful)!", "Kích Hoạt Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            await RunOsppStatusAsync();
+            if (output.Contains("Product activation successful"))
+            {
+                MessageBox.Show("🎉 Chúc mừng! Microsoft Office đã kích hoạt thành công (Product activation successful)!", "Kích Hoạt Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await RunOsppStatusAsync();
+            }
+            else
+            {
+                MessageBox.Show("Quá trình kích hoạt trả về kết quả. Vui lòng kiểm tra mã lỗi trong khung nhật ký.", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            MessageBox.Show("Quá trình kích hoạt trả về kết quả. Vui lòng kiểm tra mã lỗi trong khung nhật ký.", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Log($"[Lỗi kích hoạt Office]: {ex.Message}");
+            MessageBox.Show($"Lỗi kích hoạt: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -750,17 +843,26 @@ public class OfficeConfigForm : Form
 
     private void SetBusy(bool busy)
     {
+        if (IsDisposed || Disposing || _progressBar == null || _progressBar.IsDisposed) return;
         _progressBar.Visible = busy;
         _progressBar.MarqueeAnimationSpeed = busy ? 30 : 0;
     }
 
     private void Log(string message)
     {
+        if (IsDisposed || Disposing) return;
+
         if (InvokeRequired)
         {
-            Invoke(() => Log(message));
+            try
+            {
+                Invoke(() => Log(message));
+            }
+            catch { }
             return;
         }
+
+        if (_rtbLog == null || _rtbLog.IsDisposed) return;
 
         var ts = DateTime.Now.ToString("HH:mm:ss");
         _rtbLog.AppendText($"[{ts}] {message}\n");

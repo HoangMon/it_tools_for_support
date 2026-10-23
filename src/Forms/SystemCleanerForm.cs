@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -265,11 +265,11 @@ public class SystemCleanerForm : Form
         _chkFirefoxCache = CreateCheck("Mozilla Firefox cache", false);
         _chkEdgeHistory = CreateCheck("Lịch sử duyệt web Edge", false);
         _chkFirefoxHistory = CreateCheck("Lịch sử duyệt web Firefox (kèm cả Bookmark, không tách được)", false);
-        _chkChromeLogout = CreateCheck("🔐 Đăng xuất tài khoản đã đăng nhập trong Chrome (Cookies + mật khẩu đã lưu - vd: Facebook, Gmail...)", false);
-        _chkEdgeLogout = CreateCheck("🔐 Đăng xuất tài khoản đã đăng nhập trong Edge (Cookies + mật khẩu đã lưu - tool sẽ tự đóng Edge trước khi dọn)", false);
-        _chkFirefoxLogout = CreateCheck("🔐 Đăng xuất tài khoản đã đăng nhập trong Firefox (Cookies + mật khẩu đã lưu - tool sẽ tự đóng Firefox trước khi dọn)", false);
-        _chkZaloReset = CreateCheck("♻ Reset Zalo PC (xóa toàn bộ ZaloData - MẤT DỮ LIỆU/LỊCH SỬ TIN NHẮN)", false);
-        _chkCredentialManager = CreateCheck("🔑 Xóa Windows Credential Manager (mật khẩu mạng/RDP/tài khoản Microsoft đã lưu trong Windows)", false);
+        _chkChromeLogout = CreateCheck("Đăng xuất tài khoản đã đăng nhập trong Chrome (Cookies + mật khẩu đã lưu - vd: Facebook, Gmail...)", false);
+        _chkEdgeLogout = CreateCheck("Đăng xuất tài khoản đã đăng nhập trong Edge (Cookies + mật khẩu đã lưu - tool sẽ tự đóng Edge trước khi dọn)", false);
+        _chkFirefoxLogout = CreateCheck("Đăng xuất tài khoản đã đăng nhập trong Firefox (Cookies + mật khẩu đã lưu - tool sẽ tự đóng Firefox trước khi dọn)", false);
+        _chkZaloReset = CreateCheck("Reset Zalo PC (Xóa toàn bộ ZaloData - Dữ liệu / Lịch sử tin nhắn)", false);
+        _chkCredentialManager = CreateCheck("Xóa Windows Credential Manager (mật khẩu mạng/RDP/tài khoản Microsoft đã lưu trong Windows)", false);
 
         // Right Column Checkboxes
         _chkINetCache = CreateCheck("INetCache (Internet cache cũ)", true);
@@ -280,7 +280,7 @@ public class SystemCleanerForm : Form
         _chkRecycleBin = CreateCheck("Dọn Thùng rác (Recycle Bin)", true);
         _chkQuickAccess = CreateCheck("Lịch sử Quick Access / Recent files", false);
         _chkChromeHistory = CreateCheck("Lịch sử duyệt web Chrome", false);
-        _chkTeamsReset = CreateCheck("♻ Reset Microsoft Teams (xóa dữ liệu đăng nhập & cache Teams)", false);
+        _chkTeamsReset = CreateCheck("Reset Microsoft Teams (xóa dữ liệu đăng nhập & cache Teams)", false);
 
         // Add to TableLayoutPanel Grid
         // Row 0
@@ -340,7 +340,7 @@ public class SystemCleanerForm : Form
 
         var lblTitle = new Label
         {
-            Text = "📁 Thư mục khác cần dọn (phần mềm chưa có sẵn ở trên - VD: CAD, phần mềm nội bộ...)",
+            Text = "Thư mục bổ sung cần dọn dẹp (Ứng dụng nội bộ, CAD, phần mềm khác...)",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             AutoSize = true,
@@ -362,7 +362,7 @@ public class SystemCleanerForm : Form
 
         _btnAddFolder = new Button
         {
-            Text = "✚ Thêm thư mục...",
+            Text = "Thêm thư mục...",
             Size = new Size(155, 36),
             Location = new Point(card.Width - 165, 26),
             Anchor = AnchorStyles.Top | AnchorStyles.Right,
@@ -416,11 +416,11 @@ public class SystemCleanerForm : Form
         _btnDeselectAll.Click += (_, _) => SetAllCheckboxes(false);
         pnl.Controls.Add(_btnDeselectAll);
 
-        _btnStartClean = CreateButton("🚀 Bắt đầu dọn", new Point(255, 8), new Size(140, 36), true);
+        _btnStartClean = CreateButton("Bắt đầu dọn dẹp", new Point(255, 8), new Size(140, 36), true);
         _btnStartClean.Click += async (_, _) => await StartCleanAsync();
         pnl.Controls.Add(_btnStartClean);
 
-        _btnEmailSettings = CreateButton("👤 Mở Cài đặt Email & tài khoản...", new Point(403, 8), new Size(245, 36), false);
+        _btnEmailSettings = CreateButton("Cài đặt Email & Tài khoản", new Point(403, 8), new Size(245, 36), false);
         _btnEmailSettings.Click += (_, _) =>
         {
             try
@@ -586,7 +586,7 @@ public class SystemCleanerForm : Form
                     }
                 });
 
-            _lblStatus.Text = $"✅ Hoàn tất! Đã giải phóng: {result.MegabytesFreed:N1} MB ({result.FilesDeleted:N0} tệp tin đã xóa).";
+            _lblStatus.Text = $"[Hoàn tất] Đã giải phóng: {result.MegabytesFreed:N1} MB ({result.FilesDeleted:N0} tệp tin đã xóa).";
             _prgBar.Value = 100;
 
             MessageBox.Show(
@@ -597,7 +597,7 @@ public class SystemCleanerForm : Form
         }
         catch (Exception ex)
         {
-            _lblStatus.Text = $"❌ Lỗi dọn rác: {ex.Message}";
+            _lblStatus.Text = $"[Lỗi] Dọn rác thất bại: {ex.Message}";
             MessageBox.Show($"Xảy ra lỗi trong quá trình dọn dẹp: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally

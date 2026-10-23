@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -145,7 +145,7 @@ public class DriverBackupForm : Form
     {
         var gb = new GroupBox
         {
-            Text = "💾 SAO LƯU — làm trên máy CŨ",
+            Text = "SAO LƯU DRIVER (HỆ THỐNG HIỆN TẠI)",
             Font = new Font("Segoe UI", 10f, FontStyle.Bold),
             ForeColor = _textHeading,
             BackColor = Color.Transparent,
@@ -156,7 +156,7 @@ public class DriverBackupForm : Form
         // Row: Nơi lưu
         var lblLoc = new Label
         {
-            Text = "📁 Nơi lưu:",
+            Text = "Thư mục lưu:",
             Location = new Point(10, 28),
             Size = new Size(68, 26),
             TextAlign = ContentAlignment.MiddleLeft,
@@ -165,7 +165,7 @@ public class DriverBackupForm : Form
 
         var btnChange = new Button
         {
-            Text = "🔍 Đổi",
+            Text = "Thay đổi...",
             Location = new Point(80, 27),
             Size = new Size(66, 28),
             BackColor = _btnBg,
@@ -204,7 +204,7 @@ public class DriverBackupForm : Form
         // Button 1: Bộ gọn + WiFi (~20 MB · 3 giây)
         _btnBackupCompact = new Button
         {
-            Text = "💾 Bộ gọn + WiFi   (~20 MB · 3 giây)",
+            Text = "Bộ thiết yếu & Wi-Fi (~20 MB)",
             Location = new Point(10, 64),
             Size = new Size(325, 42),
             BackColor = _btnBg,
@@ -220,7 +220,7 @@ public class DriverBackupForm : Form
         // Button 2: Toàn bộ kho driver (~3 GB)
         _btnBackupFull = new Button
         {
-            Text = "💾 Toàn bộ kho driver (~3 GB)",
+            Text = "Toàn bộ Driver hệ thống (~3 GB)",
             Location = new Point(10, 114),
             Size = new Size(325, 38),
             BackColor = _btnBg,
@@ -236,7 +236,7 @@ public class DriverBackupForm : Form
         // Button 3: Chọn từng gói...
         _btnBackupCustom = new Button
         {
-            Text = "💾 Chọn từng gói...",
+            Text = "Chọn từng gói Driver...",
             Location = new Point(10, 160),
             Size = new Size(325, 36),
             BackColor = _btnBg,
@@ -274,7 +274,7 @@ public class DriverBackupForm : Form
     {
         var gb = new GroupBox
         {
-            Text = "💾 NẠP LẠI — máy đang THIẾU driver",
+            Text = "NẠP PHỤC HỒI DRIVER (RESTORE)",
             Font = new Font("Segoe UI", 10f, FontStyle.Bold),
             ForeColor = _textHeading,
             BackColor = Color.Transparent,
@@ -285,7 +285,7 @@ public class DriverBackupForm : Form
         // Row: Lấy từ
         var lblSrc = new Label
         {
-            Text = "📁 Lấy từ:",
+            Text = "Thư mục nguồn:",
             Location = new Point(10, 28),
             Size = new Size(68, 26),
             TextAlign = ContentAlignment.MiddleLeft,
@@ -294,7 +294,7 @@ public class DriverBackupForm : Form
 
         var btnChange = new Button
         {
-            Text = "🔍 Đổi",
+            Text = "Thay đổi...",
             Location = new Point(80, 27),
             Size = new Size(66, 28),
             BackColor = _btnBg,
@@ -333,7 +333,7 @@ public class DriverBackupForm : Form
         // Button 1: Nạp vào WinPE + kết nối WiFi
         _btnRestoreWinPe = new Button
         {
-            Text = "💾 Nạp vào WinPE + kết nối WiFi",
+            Text = "Nạp vào WinPE & Kết nối Wi-Fi",
             Location = new Point(10, 64),
             Size = new Size(325, 42),
             BackColor = _btnBg,
@@ -349,7 +349,7 @@ public class DriverBackupForm : Form
         // Button 2: Nạp vào Windows đang chạy
         _btnRestoreRunningWin = new Button
         {
-            Text = "💾 Nạp vào Windows đang chạy",
+            Text = "Nạp trực tiếp vào Windows",
             Location = new Point(10, 114),
             Size = new Size(325, 42),
             BackColor = _btnBg,
@@ -431,7 +431,7 @@ public class DriverBackupForm : Form
             TextAlign = ContentAlignment.MiddleCenter,
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
-            Text = "💾 Tiến trình: Chưa bắt đầu"
+            Text = "Tiến trình: Sẵn sàng"
         };
 
         _progressBar = new ProgressBar
@@ -488,7 +488,7 @@ public class DriverBackupForm : Form
 
         if (!string.IsNullOrEmpty(statusText))
         {
-            _lblProgressStatus.Text = $"💾 Tiến trình: {statusText}";
+            _lblProgressStatus.Text = $"Tiến trình: {statusText}";
         }
     }
 
@@ -1029,7 +1029,7 @@ public class SelectDriversDialog : Form
 
     private void InitializeComponents()
     {
-        Text = "📋 Chọn từng gói Driver cần sao lưu";
+        Text = "Chọn danh sách Driver cần sao lưu";
         Size = new Size(820, 520);
         StartPosition = FormStartPosition.CenterParent;
         BackColor = ThemeHelper.BgForm;
@@ -1050,10 +1050,10 @@ public class SelectDriversDialog : Form
         var btnDeselectAll = new Button { Text = "✕ Bỏ chọn hết", Size = new Size(110, 30), BackColor = Color.FromArgb(235, 225, 205), FlatStyle = FlatStyle.Flat };
         btnDeselectAll.Click += (_, _) => SetAllChecked(false);
 
-        var btnNetOnly = new Button { Text = "📶 Chỉ Mạng & WiFi", Size = new Size(140, 30), BackColor = Color.FromArgb(235, 225, 205), FlatStyle = FlatStyle.Flat };
+        var btnNetOnly = new Button { Text = "Chỉ Mạng & Wi-Fi", Size = new Size(140, 30), BackColor = Color.FromArgb(235, 225, 205), FlatStyle = FlatStyle.Flat };
         btnNetOnly.Click += (_, _) => SelectByFilter(d => d.IsNetworkOrWifi);
 
-        var btnStorageOnly = new Button { Text = "💾 Chỉ Storage/VMD", Size = new Size(140, 30), BackColor = Color.FromArgb(235, 225, 205), FlatStyle = FlatStyle.Flat };
+        var btnStorageOnly = new Button { Text = "Chỉ Storage / VMD", Size = new Size(140, 30), BackColor = Color.FromArgb(235, 225, 205), FlatStyle = FlatStyle.Flat };
         btnStorageOnly.Click += (_, _) => SelectByFilter(d => d.IsStorage);
 
         topBar.Controls.AddRange(new Control[] { btnSelectAll, btnDeselectAll, btnNetOnly, btnStorageOnly });
@@ -1090,7 +1090,7 @@ public class SelectDriversDialog : Form
         var bottomBar = new Panel { Dock = DockStyle.Bottom, Height = 48, Padding = new Padding(10, 6, 10, 6), BackColor = Color.Transparent };
         var btnExport = new Button
         {
-            Text = "💾 Xuất các gói đã chọn",
+            Text = "Xuất các gói đã chọn",
             Dock = DockStyle.Right,
             Width = 190,
             BackColor = Color.FromArgb(37, 99, 235),

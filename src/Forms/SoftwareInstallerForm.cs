@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -137,7 +137,7 @@ public class SoftwareInstallerForm : Form
 
         var lblTitle = new Label
         {
-            Text = "📦 Chọn phần mềm cần cài",
+            Text = "Danh mục phần mềm cần cài đặt",
             Font = new Font("Segoe UI", 11f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(0, 4),
@@ -147,7 +147,7 @@ public class SoftwareInstallerForm : Form
         bool hasWinget = SoftwareInstallService.Instance.IsWingetAvailable();
         _btnWingetStatus = new Button
         {
-            Text = hasWinget ? "✅ Winget: Sẵn sàng" : "⚡ Cài Winget (Win Lite)",
+            Text = hasWinget ? "Winget: Sẵn sàng" : "Cài Winget (Win Lite)",
             Font = new Font("Segoe UI", 8.5f, FontStyle.Bold),
             ForeColor = hasWinget ? ThemeHelper.SuccessGreen : Color.FromArgb(217, 119, 6),
             BackColor = ThemeHelper.BtnBg,
@@ -170,14 +170,14 @@ public class SoftwareInstallerForm : Form
             _btnWingetStatus.Enabled = true;
             if (ok)
             {
-                _btnWingetStatus.Text = "✅ Winget: Sẵn sàng";
+                _btnWingetStatus.Text = "Winget: Sẵn sàng";
                 _btnWingetStatus.ForeColor = ThemeHelper.SuccessGreen;
                 _btnWingetStatus.FlatAppearance.BorderColor = ThemeHelper.SuccessGreen;
                 MessageBox.Show("Đã cài đặt môi trường Winget thành công!", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
-                _btnWingetStatus.Text = "⚡ Dùng Direct Fallback";
+                _btnWingetStatus.Text = "Dùng Direct Fallback";
                 _btnWingetStatus.ForeColor = Color.FromArgb(37, 99, 235);
                 _btnWingetStatus.FlatAppearance.BorderColor = Color.FromArgb(37, 99, 235);
                 MessageBox.Show("Windows Lite không hỗ trợ AppX Service. Ứng dụng đã kích hoạt cơ chế Tải & Cài đặt trực tiếp (Direct Fallback) an toàn!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -186,7 +186,7 @@ public class SoftwareInstallerForm : Form
 
         var lblUser = new Label
         {
-            Text = "👤 Cài cho",
+            Text = "Cài đặt cho:",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Size = new Size(80, 26),
@@ -282,7 +282,7 @@ public class SoftwareInstallerForm : Form
         // Column 1: Trình duyệt - Mail - Internet
         var gbWeb = new GroupBox
         {
-            Text = "🌐 Trình duyệt - Mail - Internet",
+            Text = "Trình duyệt, Email & Mạng Internet",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Fill,
@@ -302,7 +302,7 @@ public class SoftwareInstallerForm : Form
         // Column 2: PDF - Máy in ảo
         var gbPdf = new GroupBox
         {
-            Text = "📄 PDF - Máy in ảo",
+            Text = "PDF & Máy in ảo",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Fill,
@@ -322,7 +322,7 @@ public class SoftwareInstallerForm : Form
         // Column 3: Văn phòng - Ghi chú
         var gbOffice = new GroupBox
         {
-            Text = "📝 Văn phòng - Ghi chú",
+            Text = "Văn phòng & Ghi chú",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Fill,
@@ -454,7 +454,7 @@ public class SoftwareInstallerForm : Form
 
         var btnNet35 = new Button
         {
-            Text = "⚡ Bật tính năng .NET Framework 3.5 (kèm 2.0 & 3.0)",
+            Text = "Bật tính năng .NET Framework 3.5 (kèm 2.0 & 3.0)",
             Size = new Size(380, 36),
             BackColor = _btnBg,
             FlatStyle = FlatStyle.Flat,
@@ -490,7 +490,7 @@ public class SoftwareInstallerForm : Form
 
         var lblOfficeTitle = new Label
         {
-            Text = "📦 Cài đặt Microsoft Office Trực Tiếp & Tự Động:",
+            Text = "Cài đặt Microsoft Office Trực tiếp & Tự động:",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Size = new Size(500, 26)
@@ -499,7 +499,7 @@ public class SoftwareInstallerForm : Form
 
         var btnOffice365 = new Button
         {
-            Text = "🚀 Cài đặt Microsoft 365 (Word, Excel, PowerPoint, Outlook)",
+            Text = "Cài đặt Microsoft 365 (Word, Excel, PowerPoint, Outlook)",
             Size = new Size(460, 42),
             BackColor = _btnBg,
             FlatStyle = FlatStyle.Flat,
@@ -513,7 +513,7 @@ public class SoftwareInstallerForm : Form
 
         var btnOffice2021 = new Button
         {
-            Text = "🏢 Cài đặt Office 2021 LTSC Professional Plus",
+            Text = "Cài đặt Office 2021 LTSC Professional Plus",
             Size = new Size(460, 42),
             BackColor = _btnBg,
             FlatStyle = FlatStyle.Flat,
@@ -539,7 +539,7 @@ public class SoftwareInstallerForm : Form
 
         var btnNvidiaWeb = new Button
         {
-            Text = "🌐 Mở trang tải Driver NVIDIA GeForce chính hãng",
+            Text = "Mở trang tải Driver NVIDIA GeForce chính hãng",
             Size = new Size(400, 38),
             BackColor = _btnBg,
             FlatStyle = FlatStyle.Flat,
@@ -741,7 +741,7 @@ public class SoftwareInstallerForm : Form
 
         var lblLogTitle = new Label
         {
-            Text = "📦 Nhật ký cài đặt:",
+            Text = "Nhật ký tiến trình cài đặt:",
             Location = new Point(0, 4),
             Size = new Size(200, 24),
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),

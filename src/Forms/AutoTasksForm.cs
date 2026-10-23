@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -65,7 +65,7 @@ public class AutoTasksForm : Form
         var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 48, BackColor = Color.Transparent };
         var lblTitle = new Label
         {
-            Text = "⚡ TÁC VỤ TỰ ĐỘNG HÓA BẢO TRÌ & TỐI ƯU HỆ THỐNG",
+            Text = "TÁC VỤ TỰ ĐỘNG HÓA BẢO TRÌ & TỐI ƯU HỆ THỐNG",
             Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(0, 4),
@@ -112,7 +112,7 @@ public class AutoTasksForm : Form
         var pnlActions = new Panel { Dock = DockStyle.Top, Height = 46, BackColor = Color.Transparent, Padding = new Padding(0, 6, 0, 4) };
         _btnRunAll = new Button
         {
-            Text = "🚀 Bắt đầu Chạy Tác Vụ Tự Động (1-Click)",
+            Text = "Bắt đầu Chạy Tác Vụ Tự Động (1-Click)",
             Size = new Size(290, 36),
             Location = new Point(0, 4),
             BackColor = _primaryBlue,
@@ -183,11 +183,11 @@ public class AutoTasksForm : Form
             "Xóa sạch thư mục Temp của người dùng, Windows Temp và nhật ký lỗi.",
             async log =>
             {
-                log("🧹 Đang dọn dẹp thư mục Temp cá nhân...");
+                log("Đang dọn dẹp thư mục Temp cá nhân...");
                 CleanFolder(Path.GetTempPath(), log);
-                log("🧹 Đang dọn dẹp Windows Temp...");
+                log("Đang dọn dẹp Windows Temp...");
                 CleanFolder(@"C:\Windows\Temp", log);
-                log("🧹 Đang dọn dẹp Prefetch...");
+                log("Đang dọn dẹp Prefetch...");
                 CleanFolder(@"C:\Windows\Prefetch", log);
                 await Task.Delay(200);
             });
@@ -196,9 +196,9 @@ public class AutoTasksForm : Form
             "Làm mới bảng định tuyến IP, giải phóng và đăng ký lại DNS.",
             async log =>
             {
-                log("🌐 Thực hiện Flush DNS...");
+                log("Thực hiện Flush DNS...");
                 RunCmd("ipconfig /flushdns", log);
-                log("🌐 Làm mới cấu hình Winsock...");
+                log("Làm mới cấu hình Winsock...");
                 RunCmd("netsh winsock reset catalog", log);
                 await Task.Delay(200);
             });
@@ -207,7 +207,7 @@ public class AutoTasksForm : Form
             "Đồng bộ giờ đồng hồ máy tính với máy chủ time.windows.com.",
             async log =>
             {
-                log("🕒 Đang khởi động dịch vụ Windows Time...");
+                log("Đang khởi động dịch vụ Windows Time...");
                 RunCmd("net start w32time", log);
                 RunCmd("w32tm /resync /force", log);
                 log($"  -> Giờ hệ thống hiện tại: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
@@ -218,7 +218,7 @@ public class AutoTasksForm : Form
             "Bật gói hiệu năng cao và tắt tính năng tiết kiệm điện cho card mạng.",
             async log =>
             {
-                log("⚡ Kích hoạt High Performance Power Scheme...");
+                log("Kích hoạt High Performance Power Scheme...");
                 RunCmd("powercfg -duplicatescheme 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", log);
                 RunCmd("powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", log);
                 await Task.Delay(200);
@@ -228,7 +228,7 @@ public class AutoTasksForm : Form
             "Gửi lệnh TRIM giúp khôi phục tốc độ ghi cho toàn bộ ổ SSD.",
             async log =>
             {
-                log("💽 Đang chạy lệnh TRIM tối ưu hóa ổ đĩa C:...");
+                log("Đang chạy lệnh TRIM tối ưu hóa ổ đĩa C:...");
                 RunCmd("defrag C: /O", log);
                 await Task.Delay(200);
             });
@@ -237,7 +237,7 @@ public class AutoTasksForm : Form
             "Kiểm tra kho lưu trữ gói Windows Component Store để phát hiện lỗi.",
             async log =>
             {
-                log("🔍 Đang kiểm tra trạng thái Windows Component Store...");
+                log("Đang kiểm tra trạng thái Windows Component Store...");
                 RunCmd("dism /Online /Cleanup-Image /CheckHealth", log);
                 await Task.Delay(200);
             });
@@ -295,7 +295,7 @@ public class AutoTasksForm : Form
         var ct = _cts.Token;
 
         Log($"════════════════════════════════════════════════════════════");
-        Log($"🚀 BẮT ĐẦU CHUỖI TÁC VỤ TỰ ĐỘNG HÓA ({selected.Count} tác vụ)...");
+        Log($"[BẮT ĐẦU] Chuỗi tác vụ tự động hóa ({selected.Count} tác vụ)...");
 
         int current = 0;
         int total = selected.Count;
@@ -315,25 +315,25 @@ public class AutoTasksForm : Form
 
                 await task.Action(Log);
 
-                Log($"✅ Đã hoàn tất: {task.Name}");
+                Log($"[OK] Đã hoàn tất: {task.Name}");
             }
 
             if (!ct.IsCancellationRequested)
             {
                 _progressBar.Value = 100;
                 _lblStatus.Text = "Hoàn tất toàn bộ tác vụ!";
-                Log($"🎉 CHÚC MỪNG: Toàn bộ {total} tác vụ bảo trì tự động đã hoàn thành xuất sắc!");
+                Log($"[HOÀN TẤT] Toàn bộ {total} tác vụ bảo trì tự động đã hoàn thành xuất sắc!");
                 MessageBox.Show("Toàn bộ các tác vụ bảo trì tự động đã được thực hiện thành công!", "Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 _lblStatus.Text = "Đã dừng tác vụ.";
-                Log("⚠️ Quá trình đã được người dùng dừng lại.");
+                Log("[Thông báo] Quá trình đã được người dùng dừng lại.");
             }
         }
         catch (Exception ex)
         {
-            Log($"❌ Lỗi thực thi: {ex.Message}");
+            Log($"[Lỗi] Thực thi thất bại: {ex.Message}");
         }
         finally
         {

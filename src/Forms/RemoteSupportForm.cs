@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
@@ -71,7 +71,7 @@ public class RemoteSupportForm : Form
         var pnlHeader = new Panel { Dock = DockStyle.Top, Height = 48, BackColor = Color.Transparent };
         var lblTitle = new Label
         {
-            Text = "🎧 TRUNG TÂM KẾT NỐI HỖ TRỢ TỪ XA",
+            Text = "TRUNG TÂM KẾT NỐI HỖ TRỢ TỪ XA",
             Font = new Font("Segoe UI", 11.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(0, 4),
@@ -94,7 +94,7 @@ public class RemoteSupportForm : Form
         pnlInfo.Dock = DockStyle.Top;
         pnlInfo.Padding = new Padding(14, 8, 14, 8);
 
-        var lblInfoTitle = new Label { Text = "📋 THÔNG TIN THIẾT BỊ ĐỂ ĐỌC CHO KỸ THUẬT VIÊN:", Font = new Font("Segoe UI", 8.75f, FontStyle.Bold), ForeColor = _primaryBlue, Dock = DockStyle.Top, Height = 20 };
+        var lblInfoTitle = new Label { Text = "THÔNG TIN THIẾT BỊ ĐỂ ĐỌC CHO KỸ THUẬT VIÊN:", Font = new Font("Segoe UI", 8.75f, FontStyle.Bold), ForeColor = _primaryBlue, Dock = DockStyle.Top, Height = 20 };
         var ip = GetLocalIpAddress();
         var pcInfo = $"• Tên máy: {Environment.MachineName}    • Người dùng: {Environment.UserName}\n" +
                      $"• Địa chỉ IP mạng: {ip}    • Hệ điều hành: Windows {(Environment.OSVersion.Version.Build >= 22000 ? "11" : "10")} (Build {Environment.OSVersion.Version.Build})";
@@ -119,7 +119,7 @@ public class RemoteSupportForm : Form
 
         var lblToolsTitle = new Label
         {
-            Text = "🚀 Các công cụ hỗ trợ điều khiển máy từ xa:",
+            Text = "Danh sách công cụ hỗ trợ điều khiển từ xa:",
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Top,
@@ -159,7 +159,7 @@ public class RemoteSupportForm : Form
         _tools.Add(new RemoteToolItem
         {
             Name = "UltraViewer",
-            Icon = "🖥️",
+            Icon = "•",
             ExePath = @"C:\Program Files (x86)\UltraViewer\UltraViewer_Desktop.exe",
             DownloadUrl = "https://www.ultraviewer.net/en/UltraViewer_setup_6.6_en.exe"
         });
@@ -167,7 +167,7 @@ public class RemoteSupportForm : Form
         _tools.Add(new RemoteToolItem
         {
             Name = "AnyDesk",
-            Icon = "⚡",
+            Icon = "•",
             ExePath = @"C:\Program Files (x86)\AnyDesk\AnyDesk.exe",
             DownloadUrl = "https://download.anydesk.com/AnyDesk.exe"
         });
@@ -175,7 +175,7 @@ public class RemoteSupportForm : Form
         _tools.Add(new RemoteToolItem
         {
             Name = "TeamViewer",
-            Icon = "👥",
+            Icon = "•",
             ExePath = @"C:\Program Files\TeamViewer\TeamViewer.exe",
             DownloadUrl = "https://download.teamviewer.com/download/TeamViewer_Setup_x64.exe"
         });
@@ -183,7 +183,7 @@ public class RemoteSupportForm : Form
         _tools.Add(new RemoteToolItem
         {
             Name = "RustDesk",
-            Icon = "🦀",
+            Icon = "•",
             ExePath = @"C:\Program Files\RustDesk\rustdesk.exe",
             DownloadUrl = "https://github.com/rustdesk/rustdesk/releases/download/1.3.1/rustdesk-1.3.1-x86_64.exe"
         });
@@ -191,7 +191,7 @@ public class RemoteSupportForm : Form
         _tools.Add(new RemoteToolItem
         {
             Name = "Windows Quick Assist (Hỗ trợ nhanh)",
-            Icon = "🪟",
+            Icon = "•",
             ExePath = @"C:\Windows\System32\quickassist.exe",
             ProtocolUri = "ms-quick-assist:"
         });
@@ -225,7 +225,7 @@ public class RemoteSupportForm : Form
 
         var lblStatus = new Label
         {
-            Text = isInstalled ? "✅ Đã cài đặt" : "⚠️ Chưa có trên máy",
+            Text = isInstalled ? "Đã cài đặt" : "Chưa có trên máy",
             Font = new Font("Segoe UI", 8.5f),
             ForeColor = isInstalled ? _successGreen : _textMuted,
             Location = new Point(270, 14),
@@ -303,7 +303,7 @@ public class RemoteSupportForm : Form
             lblStatus.Text = "Đang khởi chạy...";
             Process.Start(new ProcessStartInfo(targetExe) { UseShellExecute = true });
 
-            lblStatus.Text = "✅ Đang chạy";
+            lblStatus.Text = "Đang chạy";
             lblStatus.ForeColor = _successGreen;
             btn.Text = "▶ Mở lại";
         }

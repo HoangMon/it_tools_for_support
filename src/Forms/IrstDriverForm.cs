@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Management;
@@ -42,7 +42,7 @@ public class IrstDriverForm : Form
 
     private void InitializeComponents()
     {
-        Text = "💾 Kiểm tra & Cài đặt Driver Intel RST (VMD) - Cho WinPE / Cài Windows";
+        Text = "Kiểm tra & Cài đặt Driver Intel RST (VMD) - Cho WinPE / Cài Windows";
         Size = new Size(820, 780);
         MinimumSize = new Size(740, 680);
         StartPosition = FormStartPosition.CenterScreen;
@@ -101,7 +101,7 @@ public class IrstDriverForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("🔍  Trạng thái phần cứng Intel VMD / RST");
+        var lblTitle = CreateSectionHeader("Trạng thái phần cứng Intel VMD / RST");
         card.Controls.Add(lblTitle);
 
         var tbl = new TableLayoutPanel
@@ -150,7 +150,7 @@ public class IrstDriverForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("⚡  Công cụ xử lý nhanh Driver IRST / VMD");
+        var lblTitle = CreateSectionHeader("Công cụ xử lý Driver IRST / VMD");
         card.Controls.Add(lblTitle);
 
         var tbl = new TableLayoutPanel
@@ -165,37 +165,37 @@ public class IrstDriverForm : Form
         tbl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
         tbl.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
 
-        var btnLoadPe = CreateActionButton("⚡ Nạp Driver vào WinPE ngay (drvload)",
+        var btnLoadPe = CreateActionButton("Nạp Driver vào WinPE (drvload)",
             "Chạy drvload.exe nạp driver vào RAM của WinPE để hiện ổ SSD NVMe ngay lập tức",
             () => LoadDriverIntoWinPe());
         btnLoadPe.Margin = new Padding(0, 0, 6, 8);
         tbl.Controls.Add(btnLoadPe, 0, 0);
 
-        var btnInstallWin = CreateActionButton("📦 Cài Driver vào Windows (PnPUtil)",
+        var btnInstallWin = CreateActionButton("Cài Driver vào Windows (PnPUtil)",
             "Cài gói iaStorVD.inf trực tiếp vào Windows DriverStore của máy hiện tại",
             () => InstallDriverIntoCurrentWindows());
         btnInstallWin.Margin = new Padding(6, 0, 0, 8);
         tbl.Controls.Add(btnInstallWin, 1, 0);
 
-        var btnDism = CreateActionButton("💉 Tích hợp Driver vào WIM / ISO (DISM)",
+        var btnDism = CreateActionButton("Tích hợp Driver vào WIM / ISO (DISM)",
             "Tích hợp vĩnh viễn driver VMD vào boot.wim / install.wim bộ cài Win",
             () => InjectDriverIntoWim());
         btnDism.Margin = new Padding(0, 0, 6, 8);
         tbl.Controls.Add(btnDism, 0, 1);
 
-        var btnOpenDir = CreateActionButton("📂 Mở thư mục Driver có sẵn",
+        var btnOpenDir = CreateActionButton("Mở thư mục Driver",
             "Mở thư mục chứa gói driver iaStorVD (Gen 11, 12, 13, 14) trên máy",
             () => OpenDriverFolder());
         btnOpenDir.Margin = new Padding(6, 0, 0, 8);
         tbl.Controls.Add(btnOpenDir, 1, 1);
 
-        var btnDownload = CreateActionButton("🌐 Tải Driver Intel RST mới nhất",
+        var btnDownload = CreateActionButton("Tải Driver Intel RST chính hãng",
             "Mở liên kết tải bộ driver Intel Rapid Storage Technology chính thức",
             () => DownloadLatestRstDriver());
         btnDownload.Margin = new Padding(0, 0, 6, 0);
         tbl.Controls.Add(btnDownload, 0, 2);
 
-        var btnRescan = CreateActionButton("🔄 Quét lại phần cứng & Driver",
+        var btnRescan = CreateActionButton("Quét lại phần cứng & Driver",
             "Làm mới thông tin nhận diện VMD và kiểm tra lại trạng thái ổ đĩa",
             () => ScanHardwareAndDrivers());
         btnRescan.Margin = new Padding(6, 0, 0, 0);
@@ -210,7 +210,7 @@ public class IrstDriverForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("💡  Cách tắt VMD Controller trong BIOS (Nếu không muốn cài Driver)");
+        var lblTitle = CreateSectionHeader("Hướng dẫn tắt VMD Controller trong BIOS");
         card.Controls.Add(lblTitle);
 
         var txtGuide = new TextBox
@@ -244,7 +244,7 @@ public class IrstDriverForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("📋  Nhật ký thao tác");
+        var lblTitle = CreateSectionHeader("Nhật ký thao tác");
         card.Controls.Add(lblTitle);
 
         _rtbLog = new RichTextBox
@@ -363,13 +363,13 @@ public class IrstDriverForm : Form
             {
                 pnlAlert.BackColor = _warningBg;
                 lblAlertText.ForeColor = _warningAmber;
-                lblAlertText.Text = "⚠️ Máy tính ĐANG DÙNG Intel VMD Controller! Cần nạp driver IRST khi cài Win / WinPE để nhận diện ổ SSD.";
+                lblAlertText.Text = "[Cảnh báo] Máy tính ĐANG DÙNG Intel VMD Controller! Cần nạp driver IRST khi cài Win / WinPE để nhận diện ổ SSD.";
             }
             else
             {
                 pnlAlert.BackColor = _successBg;
                 lblAlertText.ForeColor = _successGreen;
-                lblAlertText.Text = "✅ Máy tính không dùng Intel VMD (Chuẩn AHCI/NVMe thông thường). Không cần nạp thêm driver.";
+                lblAlertText.Text = "[OK] Máy tính không dùng Intel VMD (Chuẩn AHCI/NVMe thông thường). Không cần nạp thêm driver.";
             }
         }
 
@@ -379,12 +379,12 @@ public class IrstDriverForm : Form
         {
             if (!string.IsNullOrEmpty(_detectedDriverPath))
             {
-                valDriver.Text = $"✅ Đã tìm thấy: {_detectedDriverPath}";
+                valDriver.Text = $"[OK] Đã tìm thấy: {_detectedDriverPath}";
                 valDriver.ForeColor = _successGreen;
             }
             else
             {
-                valDriver.Text = "⚠️ Chưa tìm thấy tệp iaStorVD.inf trên máy (Bấm nút Tải Driver để tải về)";
+                valDriver.Text = "[Cảnh báo] Chưa tìm thấy tệp iaStorVD.inf trên máy (Bấm nút Tải Driver để tải về)";
                 valDriver.ForeColor = _warningAmber;
             }
         }
@@ -421,7 +421,7 @@ public class IrstDriverForm : Form
 
             if (p?.ExitCode == 0)
             {
-                Log("✅ drvload nạp driver VMD thành công! Ổ cứng NVMe đã được kích hoạt.");
+                Log("[OK] drvload nạp driver VMD thành công! Ổ cứng NVMe đã được kích hoạt.");
                 MessageBox.Show("Đã nạp driver IRST VMD vào WinPE thành công!\nỔ cứng NVMe đã sẵn sàng trong Windows Explorer và Disk Management.", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -503,7 +503,7 @@ public class IrstDriverForm : Form
 
             try { Directory.Delete(mountDir, true); } catch { }
 
-            Log("🎉 ĐÃ TÍCH HỢP DRIVER IRST VMD VÀO FILE WIM THÀNH CÔNG!");
+            Log("[HOÀN TẤT] Đã tích hợp DRIVER IRST VMD VÀO FILE WIM THÀNH CÔNG!");
             MessageBox.Show($"Đã tích hợp xong driver VMD vào {Path.GetFileName(wimPath)} thành công!", "Hoàn Tất", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)

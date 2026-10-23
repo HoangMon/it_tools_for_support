@@ -1,3 +1,57 @@
+# 📦 E-TOOLBOX - Patch Notes v1.0.2
+
+<p align="center">
+  <img src="src/Resources/app.png" alt="E-TOOLBOX Crafting Table Logo" width="128" height="128" />
+</p>
+
+**Phiên bản:** `v1.0.2`  
+**Ngày phát hành:** 23/10/2026  
+**Nền tảng mục tiêu:** Windows 10, Windows 11, Windows Server & Môi trường cứu hộ WinPE (x64)  
+**Tương thích:** Standalone Single-File Executable (Độc lập, không cần cài .NET Runtime)
+
+---
+
+## 🌟 TỔNG QUAN PHIÊN BẢN v1.0.2
+
+Bản phát hành **v1.0.2** mang đến bước tiến lớn về trải nghiệm người dùng với việc chính thức đổi tên phần mềm thành **E-TOOLBOX**, tích hợp chức năng **Tìm kiếm & Khởi chạy nhanh (Search Tab)** thông minh, nâng cấp **HUD Telemetry** theo dõi phần cứng chuẩn xác (Fan RPM, dGPU vs iGPU), bổ sung chuyển đổi **Đa ngôn ngữ Tiếng Anh / Tiếng Việt**, và tinh gọn thanh tác vụ Sidebar.
+
+---
+
+## 🚀 DANH SÁCH CHI TIẾT CÁC THAY ĐỔI & TÍNH NĂNG MỚI (v1.0.2)
+
+### 1. 🔍 Chức Năng Tìm Kiếm & Khởi Chạy Nhanh (Search Tab)
+- **Vị trí thuận tiện:** Thêm nút chuyển tab `🔍 Tìm kiếm` nằm ngay dưới mục `☵ Thiết bị (Devices)`.
+- **Tìm kiếm tức thì (Real-time Filter):** Tìm kiếm theo từ khóa tiếng Việt (có dấu & không dấu) và tiếng Anh trên toàn bộ 46+ tính năng của E-TOOLBOX mà không cần nhấn Enter.
+- **Bộ lọc danh mục (Category Chips):**
+  - *Tất cả (All)*
+  - *💻 Cài Win & Boot (Windows & Boot)*
+  - *💾 Driver & Sao lưu (Drivers & Backup)*
+  - *📝 Văn phòng & Office (Office & Apps)*
+  - *🛠️ Chẩn đoán & Test (Diagnostics & Test)*
+  - *⚡ Tối ưu & Sửa lỗi (Tweaks & Fixes)*
+  - *🌐 Thiết bị & Sheet (Devices & Sync)*
+- **Thẻ chức năng trực quan:** Hiển thị biểu tượng, tiêu đề, mô tả công năng chi tiết và nút `🚀 Mở` / `🚀 Open` để khởi chạy tính năng chỉ với một cú nhấp chuột.
+- **Phím tắt tiện dụng:** Nhấn `Ctrl + F` hoặc `F5` tại bất kỳ đâu để nhảy ngay đến ô tìm kiếm.
+- **Đồng bộ màu sắc 100%:** Thiết kế chuẩn Swiss Minimalism / UI Pro Max, đồng bộ màu hoàn hảo giữa Dark Mode và Light Mode.
+
+### 2. 🏷️ Đổi Tên Ứng Dụng Thành E-TOOLBOX
+- Chuẩn hóa tên thương hiệu trên thanh tiêu đề, sidebar brand, thông tin phiên bản, Assembly metadata và tên tệp thực thi `E-TOOLBOX.exe`.
+
+### 3. 🌐 Hỗ Trợ Đa Ngôn Ngữ (Bilingual English / Vietnamese)
+- Tùy chọn chuyển đổi ngôn ngữ Anh / Việt trực tiếp trong **Cài đặt (Settings)**.
+- Tự động đồng bộ toàn bộ giao diện: Thanh tác vụ Sidebar, Header trạng thái, HUD giám sát, các danh mục chức năng và giao diện tìm kiếm.
+
+### 4. 📊 Nâng Cấp Giám Sát Phần Cứng & HUD Telemetry
+- **Đo tốc độ Quạt (Fan RPM) chuẩn xác:** Hỗ trợ đa nguồn cảm biến (HP Omen BIOS WMI, LPC/EC, ACPI Thermal, Nvidia NVML), khắc phục triệt để tình trạng quạt đang quay nhưng app hiển thị 0 RPM.
+- **Phân biệt chuẩn dGPU & iGPU:** Khắc phục lỗi nhận diện sai giữa card đồ họa rời (dGPU) và card tích hợp (iGPU). Tránh tình trạng dGPU đang idle (nghỉ) nhưng phần mềm báo nhầm là đang hoạt động nặng.
+- **Bố cục hiển thị trung tâm:** Căn chỉnh đồ thị và thông số CPU / GPU về vị trí trung tâm, cân đối và trực quan hơn.
+
+### 5. 🎛️ Tinh Gọn & Tối Ưu Thanh Tác Vụ (Sidebar)
+- Thu gọn sidebar thành chế độ mini 64px với tooltip trực quan hoặc ẩn hoàn toàn thanh tác vụ (`Ctrl + B`).
+- Tối ưu giao diện chỉ giữ lại 1 nút thu gọn tinh tế, loại bỏ nút dư thừa.
+
+---
+
 # 📦 Ernastie IT Tools - Patch Notes v1.0.1
 
 <p align="center">
@@ -109,3 +163,27 @@ Bản phát hành **v1.0.1** là một bản cập nhật lớn mang tính bư�
 
 ---
 *Phát triển bởi Ernas / HoangMon - IT Tools for Support Project.*
+
+---
+
+## 💎 NÂNG CẤP TOÀN DIỆN GIAO DIỆN (UI/UX PRO MAX 2.15.0)
+
+Tuân thủ nghiêm ngặt chuẩn thiết kế **UI/UX Pro Max 2.15.0** (`Swiss Modernism 2.0` & `Data-Dense Dashboard`):
+
+1. **Chuẩn Hóa Hệ Thống Màu & Token Thiết Kế (WCAG AAA Compliant):**
+   - **Dark Mode (OLED / Deep Slate):** Nền chính Obsidian (`#0B0E14`), bề mặt Card Slate sang trọng (`#111722`), đường viền sắc nét 1px (`#202A3C`), độ tương phản chữ đạt chuẩn WCAG AAA (> 13:1 cho tiêu đề `#F8FAFC`, > 10:1 cho nội dung `#E2E8F0`).
+   - **Light Mode (Crisp Modern Slate):** Nền Slate 50 (`#F8FAFC`), Card trắng tinh khiết (`#FFFFFF`), đường viền Slate 200 (`#E2E8F0`), tiêu đề Slate 900 (`#0F172A`).
+   - **Bảng màu trạng thái chuẩn hóa:** Primary Blue (`#2563EB`), Success Green (`#16A34A`), Warning Amber (`#D97706`), Danger Red (`#DC2626`).
+
+2. **Áp Dụng Quy Tắc Thiết Kế `no-emoji-icons`:**
+   - Loại bỏ triệt để việc lạm dụng emoji rời rạc trong các nhãn nút bấm, tiêu đề hộp thoại và bảng điều khiển.
+   - Thay thế bằng typographic symbols chuẩn (`⊞`, `⚙`, `⚡`, `☵`, `✓`, `✕`, `•`) kết hợp cùng hệ thống nhãn text doanh nghiệp và badge pills chuyên nghiệp, loại bỏ hoàn toàn hiện tượng vỡ icon ô vuông (tofu) khi chạy trong môi trường WinPE hoặc Windows Server.
+
+3. **Tối Ưu Trải Nghiệm Điều Khiển & Phản Hồi (Touch & Micro-Interactions):**
+   - Chuẩn hóa kích thước nút bấm tối thiểu từ 38px - 44px, khoảng cách giữa các phần tử tương tác đạt chuẩn 8px+.
+   - Thiết lập `Cursor = Hand`, trạng thái di chuột (`MouseOverBackColor`) và nhấn chuột (`MouseDownBackColor`) rõ ràng trên 100% nút bấm.
+   - Bật kỹ thuật **Double Buffering** trên toàn bộ hệ thống form để triệt tiêu hiện tượng nhấp nháy (flicker) khi đổi kích thước hoặc chuyển đổi giao diện Sáng / Tối.
+
+4. **Đồng Bộ Giao Diện Trên Toàn Bộ 23 Form & Dialog:**
+   - Kết nối trực tiếp cơ chế quản lý theme trung tâm `ThemeHelper.ApplyTheme` vào toàn bộ các form (`SettingsForm`, `OfficeConfigForm`, `CheckTestForm`, `SystemCleanerForm`, `SoftwareInstallerForm`, `WinPeBootForm`,...).
+   - Bảng điều khiển nhật ký (Log Console) chuyển sang font lập trình viên `Cascadia Mono` / `Consolas` trên nền tối với màu chữ Emerald hiển thị trực quan.

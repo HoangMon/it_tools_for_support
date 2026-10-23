@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using Ernastie.Services;
@@ -36,7 +36,7 @@ public class SystemInfoForm : Form
 
     private void InitializeComponents()
     {
-        Text = "🖥️ Thông tin hệ thống";
+        Text = "Thông tin Hệ thống & Cấu hình Phần cứng";
         Size = new Size(1060, 840);
         MinimumSize = new Size(960, 740);
         StartPosition = FormStartPosition.CenterScreen;
@@ -152,7 +152,7 @@ public class SystemInfoForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("📋  Thông tin chung");
+        var lblTitle = CreateSectionHeader("Thông tin chung (Overview)");
         card.Controls.Add(lblTitle);
 
         var tbl = new TableLayoutPanel
@@ -198,7 +198,7 @@ public class SystemInfoForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("🔑  Windows & Bản quyền");
+        var lblTitle = CreateSectionHeader("Windows & Bản quyền (License)");
         card.Controls.Add(lblTitle);
 
         var tbl = new TableLayoutPanel
@@ -239,7 +239,7 @@ public class SystemInfoForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("🎮  Card đồ họa");
+        var lblTitle = CreateSectionHeader("Card đồ họa (GPU)");
         card.Controls.Add(lblTitle);
 
         var tbl = new TableLayoutPanel
@@ -269,7 +269,7 @@ public class SystemInfoForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("💾  RAM");
+        var lblTitle = CreateSectionHeader("Bộ nhớ (RAM)");
         card.Controls.Add(lblTitle);
 
         int slotCount = Math.Max(1, _info.RamSlots.Count);
@@ -310,7 +310,7 @@ public class SystemInfoForm : Form
     {
         var card = CreateBaseCard();
 
-        var lblTitle = CreateSectionHeader("💽  Ổ cứng");
+        var lblTitle = CreateSectionHeader("Ổ đĩa & Phân vùng (Storage)");
         card.Controls.Add(lblTitle);
 
         var tbl = new TableLayoutPanel
@@ -365,11 +365,11 @@ public class SystemInfoForm : Form
             Margin = Padding.Empty
         };
 
-        var btnShowKey = CreatePrimaryButton("🔑 Mở ShowKeyPlus", () => OpenShowKeyPlusOrModal());
+        var btnShowKey = CreatePrimaryButton("Xem chi tiết Bản quyền (ShowKeyPlus)", () => OpenShowKeyPlusOrModal());
         btnShowKey.Size = new Size(200, 40);
         btnShowKey.Margin = new Padding(0, 0, 12, 0);
 
-        var btnRefresh = CreateStyledButton("🔄 Làm mới (F5)", () => ReloadData());
+        var btnRefresh = CreateStyledButton("Quét lại (F5)", () => ReloadData());
         btnRefresh.Size = new Size(140, 40);
         btnRefresh.Margin = new Padding(0, 0, 12, 0);
 
@@ -512,7 +512,7 @@ public class SystemInfoForm : Form
 
         using var modal = new Form
         {
-            Text = "🔑 ShowKeyPlus - Chi tiết Bản quyền Windows",
+            Text = "ShowKeyPlus - Chi tiết Bản quyền Windows",
             Size = new Size(620, 440),
             StartPosition = FormStartPosition.CenterParent,
             BackColor = _bgForm,
@@ -562,7 +562,7 @@ public class SystemInfoForm : Form
         pnlCard.Controls.Add(tbl);
         modal.Controls.Add(pnlCard);
 
-        var btnCopy = CreatePrimaryButton("📋 Sao chép thông tin bản quyền", () =>
+        var btnCopy = CreatePrimaryButton("Sao chép thông tin bản quyền", () =>
         {
             var text = $"Tên sản phẩm: {_info.OsName}\n" +
                        $"Phiên bản: {_info.OsVersion}\n" +

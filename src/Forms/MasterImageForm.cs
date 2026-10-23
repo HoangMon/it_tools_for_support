@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Ernastie.Services;
@@ -93,7 +93,7 @@ public class MasterImageForm : Form
         pnlButtons.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
 
         // Button 1 Click
-        _btnOneClick = CreateThemedButton("🚀 1 CLICK: làm hết 4 bước (Sysprep → chụp ảnh → ghép ISO → tắt máy)", _btnGold, _btnGoldBorder, _textBrown, FontStyle.Bold, 48);
+        _btnOneClick = CreateThemedButton("Quy trình 1-Click: Tạo Master Image (Sysprep -> Chụp WIM -> Đóng gói ISO)", _btnGold, _btnGoldBorder, _textBrown, FontStyle.Bold, 48);
         pnlButtons.Controls.Add(_btnOneClick, 0, 0);
         pnlButtons.SetColumnSpan(_btnOneClick, 2);
         _btnOneClick.Click += (_, _) => OnClickOneClick();
@@ -128,7 +128,7 @@ public class MasterImageForm : Form
         _btnStep4.Click += (_, _) => OnClickStep4();
 
         // Button Fix Sysprep
-        _btnFixSysprep = CreateThemedButton("🩹 Sửa lỗi Sysprep (Bước 1 báo lỗi khi Generalize)", _btnCoral, _btnCoralBorder, _textRed, FontStyle.Bold, 42);
+        _btnFixSysprep = CreateThemedButton("Sửa lỗi Sysprep (Khắc phục lỗi Generalize 0x80073cf2)", _btnCoral, _btnCoralBorder, _textRed, FontStyle.Bold, 42);
         pnlButtons.Controls.Add(_btnFixSysprep, 0, 5);
         pnlButtons.SetColumnSpan(_btnFixSysprep, 2);
         _btnFixSysprep.Click += (_, _) => OnClickFixSysprep();
@@ -146,7 +146,7 @@ public class MasterImageForm : Form
 
         var lblStatusTitle = new Label
         {
-            Text = "📋 Tình trạng (đang có gì, còn thiếu gì):",
+            Text = "Tình trạng hệ thống & Công cụ:",
             Font = new Font("Segoe UI", 9.75f, FontStyle.Bold),
             ForeColor = _textDark,
             Dock = DockStyle.Left,
@@ -154,12 +154,12 @@ public class MasterImageForm : Form
             TextAlign = ContentAlignment.MiddleLeft
         };
 
-        _btnRefresh = CreateSmallButton("🔄 Làm mới", () => RefreshStatus());
+        _btnRefresh = CreateSmallButton("Quét lại", () => RefreshStatus());
         _btnRefresh.Dock = DockStyle.Right;
         _btnRefresh.Width = 105;
         _btnRefresh.Margin = new Padding(4, 0, 0, 0);
 
-        _btnChangeDir = CreateSmallButton("📁 Đổi chỗ lưu", () => OnClickChangeDir());
+        _btnChangeDir = CreateSmallButton("Đổi thư mục lưu...", () => OnClickChangeDir());
         _btnChangeDir.Dock = DockStyle.Right;
         _btnChangeDir.Width = 120;
 
@@ -196,7 +196,7 @@ public class MasterImageForm : Form
         // 4. Section Nhật Ký
         var lblLogTitle = new Label
         {
-            Text = "📋 Nhật ký (đang ở bước nào + %):",
+            Text = "Nhật ký tiến trình Master Image:",
             Font = new Font("Segoe UI", 9.75f, FontStyle.Bold),
             ForeColor = _textDark,
             Dock = DockStyle.Top,
@@ -262,7 +262,7 @@ public class MasterImageForm : Form
         bool isWinPe = _service.IsWinPE();
         if (!isWinPe)
         {
-            var msg = "🚀 QUY TRÌNH 1-CLICK TẠO BỘ CÀI MASTER:\n\n" +
+            var msg = "QUY TRÌNH 1-CLICK TẠO BỘ CÀI MASTER:\n\n" +
                       "1. Tự động kiểm tra và sửa các lỗi Sysprep xung đột\n" +
                       "2. Xác nhận thư mục lưu ảnh WIM/ISO\n" +
                       "3. Chạy Sysprep (OOBE + Generalize) và Khởi động lại máy vào WinPE để chụp ảnh\n\n" +
@@ -288,7 +288,7 @@ public class MasterImageForm : Form
         else
         {
             // In WinPE
-            var msg = "🚀 Bạn đang ở môi trường WinPE!\n" +
+            var msg = "Bạn đang ở môi trường WinPE!\n" +
                       "1-Click sẽ tự động nhận diện ổ Windows của máy mẫu và chụp thành install.wim vào chỗ lưu.\n\n" +
                       $"Chỗ lưu: {_storageDir}\n\n" +
                       "Bắt đầu chụp ảnh ngay?";
@@ -310,7 +310,7 @@ public class MasterImageForm : Form
         }
 
         var res = MessageBox.Show(
-            "⚠️ BƯỚC 1 - CHẠY SYSPREP TRÊN MÁY MẪU:\n\n" +
+            "BƯỚC 1 - CHẠY SYSPREP TRÊN MÁY MẪU:\n\n" +
             "Quá trình này sẽ tổng quát hóa hệ điều hành (Generalize) và chuẩn bị chế độ OOBE.\n" +
             "Máy tính sẽ khởi động lại để bạn boot vào WinPE chụp ảnh ổ đĩa.\n\n" +
             "Bạn đã chuẩn bị USB Boot WinPE sẵn sàng chưa?",
@@ -481,7 +481,7 @@ public class MasterImageForm : Form
             }, _cts.Token);
 
             RefreshStatus();
-            MessageBox.Show($"🎉 ĐÃ TẠO XONG FILE ISO MASTER:\n{outputIso}\n\nBạn có thể ghi file ISO này ra USB bằng Rufus/Ventoy để cài đặt cho các máy khác!", "Hoàn Tất Master ISO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"[HOÀN TẤT] ĐÃ TẠO XONG FILE ISO MASTER:\n{outputIso}\n\nBạn có thể ghi file ISO này ra USB bằng Rufus/Ventoy để cài đặt cho các máy khác!", "Hoàn Tất Master ISO", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (OperationCanceledException)
         {

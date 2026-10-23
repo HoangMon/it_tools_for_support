@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -74,7 +74,7 @@ public class CredentialAndCertificateForm : Form
 
     private void InitializeComponents()
     {
-        Text = "🔑 Mật khẩu Windows đã lưu và Chữ ký số - lấy ra / đưa vào";
+        Text = "Quản Lý Mật Khẩu Windows & Chữ Ký Số (Credentials & Certificates)";
         Size = new Size(950, 580);
         MinimumSize = new Size(920, 540);
         StartPosition = FormStartPosition.CenterParent;
@@ -191,7 +191,7 @@ public class CredentialAndCertificateForm : Form
 
         var lblUser = new Label
         {
-            Text = "👤 Tài khoản của khách:",
+            Text = "Tài khoản người dùng:",
             Location = new Point(0, 5),
             Size = new Size(155, 24),
             Font = new Font("Segoe UI", 9.5f, FontStyle.Bold),
@@ -228,7 +228,7 @@ public class CredentialAndCertificateForm : Form
     {
         var gb = new GroupBox
         {
-            Text = "💾 MÁY CŨ - lấy ra để cất",
+            Text = "SAO LƯU (MÁY HIỆN TẠI) - Xuất dữ liệu cất trữ",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             BackColor = Color.Transparent,
@@ -250,7 +250,7 @@ public class CredentialAndCertificateForm : Form
 
         var btnChooseDest = new Button
         {
-            Text = "🔍 Chọn nơi cất (USB)",
+            Text = "Chọn thư mục lưu trữ (USB/Ổ đĩa)...",
             Location = new Point(74, 27),
             Size = new Size(150, 30),
             BackColor = _btnBg,
@@ -299,7 +299,7 @@ public class CredentialAndCertificateForm : Form
 
         var btnScan = new Button
         {
-            Text = "🔍 Kiểm tra máy này có gì",
+            Text = "Kiểm tra chứng thư & mật khẩu trên máy",
             Location = new Point(74, 65),
             Size = new Size(170, 30),
             BackColor = _btnBg,
@@ -382,7 +382,7 @@ public class CredentialAndCertificateForm : Form
         // Big Export Button
         _btnExport = new Button
         {
-            Text = "💾 LẤY RA và cất vào nơi đã chọn",
+            Text = "Xuất toàn bộ vào thư mục đã chọn",
             Location = new Point(10, 290),
             Size = new Size(420, 38),
             Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
@@ -415,7 +415,7 @@ public class CredentialAndCertificateForm : Form
     {
         var gb = new GroupBox
         {
-            Text = "💾 MÁY MỚI - đưa vào máy này",
+            Text = "PHỤC HỒI (MÁY ĐÍCH) - Nạp dữ liệu vào máy này",
             Font = new Font("Segoe UI", 10.5f, FontStyle.Bold),
             ForeColor = _textHeading,
             BackColor = Color.Transparent,
@@ -437,7 +437,7 @@ public class CredentialAndCertificateForm : Form
 
         var btnChooseSrc = new Button
         {
-            Text = "🔍 Chọn thư mục đã cất",
+            Text = "Chọn thư mục chứa bản sao lưu...",
             Location = new Point(74, 27),
             Size = new Size(160, 30),
             BackColor = _btnBg,
@@ -543,7 +543,7 @@ public class CredentialAndCertificateForm : Form
         // Big Import Button
         _btnImport = new Button
         {
-            Text = "💾 ĐƯA VÀO máy này",
+            Text = "Nạp dữ liệu vào máy tính này",
             Location = new Point(10, 290),
             Size = new Size(420, 38),
             Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
@@ -580,7 +580,7 @@ public class CredentialAndCertificateForm : Form
 
         _lblBottomStatus = new Label
         {
-            Text = "💾 Sẵn sàng.",
+            Text = "Sẵn sàng.",
             Dock = DockStyle.Left,
             AutoSize = true,
             Font = new Font("Segoe UI", 9f, FontStyle.Bold),
@@ -599,7 +599,7 @@ public class CredentialAndCertificateForm : Form
             Invoke(() => SetStatus(msg));
             return;
         }
-        _lblBottomStatus.Text = $"💾 {msg}";
+        _lblBottomStatus.Text = $"{msg}";
     }
 
     private void ScanOldMachineItems()
@@ -942,7 +942,7 @@ public class CredentialAndCertificateForm : Form
 
         var res = MessageBox.Show(
             $"Đã lấy ra thành công {exportedCount} mục và cất vào thư mục:\n{finalFolder}\n\n" +
-            $"🔑 Mật khẩu bảo vệ đã đặt: {password}\n\n" +
+            $"Mật khẩu bảo vệ đã đặt: {password}\n\n" +
             $"Bạn có muốn mở thư mục này ngay bây giờ không?",
             "Lấy Ra Thành Công",
             MessageBoxButtons.YesNo,
@@ -1137,7 +1137,7 @@ public class CredentialAndCertificateForm : Form
     private void ShowHelpModal()
     {
         var helpMsg = new StringBuilder();
-        helpMsg.AppendLine("📖 HƯỚNG DẪN SAO LƯU & CHUYỂN ĐỔI CHỮ KÝ SỐ VÀ MẬT KHẨU WINDOWS");
+        helpMsg.AppendLine("HƯỚNG DẪN SAO LƯU & CHUYỂN ĐỔI CHỮ KÝ SỐ VÀ MẬT KHẨU WINDOWS");
         helpMsg.AppendLine("=====================================================================");
         helpMsg.AppendLine("1. KHI CÀI LẠI WIN HOẶC ĐỔI MÁY MỚI:");
         helpMsg.AppendLine("   - Mọi mật khẩu đã lưu (WiFi, ổ đĩa mạng công ty, máy in, Outlook...)");

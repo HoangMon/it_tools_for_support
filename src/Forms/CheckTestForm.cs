@@ -32,6 +32,7 @@ public class CheckTestForm : Form
     private Button _btnCheckKeyboard = null!;
     private Button _btnCheckCamera = null!;
     private Button _btnCheckAudio = null!;
+    private Button _btnCheckNetwork = null!;
     private Button _btnCheckRam = null!;
     private Button _btnCheckBsod = null!;
     private Label _lblDumpStatus = null!;
@@ -52,7 +53,7 @@ public class CheckTestForm : Form
 
     private void InitializeComponents()
     {
-        Text = "⚡ Check - Test";
+        Text = "Chẩn đoán & Kiểm tra Phần cứng (Hardware Diagnostics)";
         Size = new Size(820, 750);
         MinimumSize = new Size(760, 680);
         StartPosition = FormStartPosition.CenterParent;
@@ -75,7 +76,7 @@ public class CheckTestForm : Form
         // 1. Big Banner Button: Check toàn diện
         _btnCheckAll = new Button
         {
-            Text = "🩺 Check toàn diện (pin + ổ cứng + tốc độ + quét bề mặt)",
+            Text = "Chẩn đoán toàn diện (Pin, Ổ cứng, Tốc độ, Quét bề mặt)",
             Location = new Point(16, curY),
             Size = new Size(mainPanel.Width - 32, 48),
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
@@ -93,34 +94,38 @@ public class CheckTestForm : Form
 
         // 2. Row 2: 3 buttons (Pin | Màn hình | Bàn phím)
         int row2BtnW = (mainPanel.Width - 32 - 16) / 3;
-        _btnCheckBattery = CreateActionBtn("🔋 Kiểm tra thông tin pin", new Point(16, curY), new Size(row2BtnW, 40));
+        _btnCheckBattery = CreateActionBtn("Thông tin Pin Laptop", new Point(16, curY), new Size(row2BtnW, 40));
         _btnCheckBattery.Click += (_, _) => CheckBatteryDetails();
         mainPanel.Controls.Add(_btnCheckBattery);
 
-        _btnCheckScreen = CreateActionBtn("🖥️ Kiểm tra màn hình", new Point(16 + row2BtnW + 8, curY), new Size(row2BtnW, 40));
+        _btnCheckScreen = CreateActionBtn("Kiểm tra Màn hình & Điểm chết", new Point(16 + row2BtnW + 8, curY), new Size(row2BtnW, 40));
         _btnCheckScreen.Click += (_, _) => OpenScreenTest();
         mainPanel.Controls.Add(_btnCheckScreen);
 
-        _btnCheckKeyboard = CreateActionBtn("⌨️ Kiểm tra bàn phím", new Point(16 + (row2BtnW + 8) * 2, curY), new Size(row2BtnW, 40));
+        _btnCheckKeyboard = CreateActionBtn("Kiểm tra Bàn phím trực quan", new Point(16 + (row2BtnW + 8) * 2, curY), new Size(row2BtnW, 40));
         _btnCheckKeyboard.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         _btnCheckKeyboard.Click += (_, _) => OpenKeyboardTest();
         mainPanel.Controls.Add(_btnCheckKeyboard);
         curY += 48;
 
-        // 3. Row 3: 2 buttons (Webcam / Camera | Micro + Loa)
-        int row3BtnW = (mainPanel.Width - 32 - 8) / 2;
-        _btnCheckCamera = CreateActionBtn("📷 Kiểm tra Webcam / Camera", new Point(16, curY), new Size(row3BtnW, 40));
+        // 3. Row 3: 3 buttons (Webcam / Camera | Micro + Loa | Chẩn đoán Mạng)
+        int row3BtnW = (mainPanel.Width - 32 - 16) / 3;
+        _btnCheckCamera = CreateActionBtn("Kiểm tra Webcam & Camera", new Point(16, curY), new Size(row3BtnW, 40));
         _btnCheckCamera.Click += (_, _) => CheckCamera();
         mainPanel.Controls.Add(_btnCheckCamera);
 
-        _btnCheckAudio = CreateActionBtn("🎤 Kiểm tra Micro + Loa", new Point(16 + row3BtnW + 8, curY), new Size(row3BtnW, 40));
-        _btnCheckAudio.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        _btnCheckAudio = CreateActionBtn("Kiểm tra Loa & Microphone", new Point(16 + row3BtnW + 8, curY), new Size(row3BtnW, 40));
         _btnCheckAudio.Click += (_, _) => CheckAudioAndMic();
         mainPanel.Controls.Add(_btnCheckAudio);
+
+        _btnCheckNetwork = CreateActionBtn("Chẩn đoán Mạng (Tải chậm)", new Point(16 + (row3BtnW + 8) * 2, curY), new Size(row3BtnW, 40));
+        _btnCheckNetwork.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        _btnCheckNetwork.Click += (_, _) => OpenNetworkDiagnostic();
+        mainPanel.Controls.Add(_btnCheckNetwork);
         curY += 48;
 
         // 4. Row 4: Kiểm tra RAM (Full Width)
-        _btnCheckRam = CreateActionBtn("🧠 Kiểm tra RAM (quét nhật ký lỗi + test ghi/đọc từng byte)", new Point(16, curY), new Size(mainPanel.Width - 32, 42));
+        _btnCheckRam = CreateActionBtn("Kiểm tra Bộ nhớ RAM (Quét nhật ký lỗi & Test I/O)", new Point(16, curY), new Size(mainPanel.Width - 32, 42));
         _btnCheckRam.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         _btnCheckRam.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
         _btnCheckRam.Click += (_, _) => OpenRamTest();
@@ -128,7 +133,7 @@ public class CheckTestForm : Form
         curY += 50;
 
         // 5. Row 5: Màn hình xanh BSOD (Full Width)
-        _btnCheckBsod = CreateActionBtn("💥 Màn hình xanh (BSOD) - đọc nhật ký + file .dmp", new Point(16, curY), new Size(mainPanel.Width - 32, 42));
+        _btnCheckBsod = CreateActionBtn("Phân tích Crash Dump & Màn hình xanh (BSOD)", new Point(16, curY), new Size(mainPanel.Width - 32, 42));
         _btnCheckBsod.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         _btnCheckBsod.Font = new Font("Segoe UI", 10f, FontStyle.Bold);
         _btnCheckBsod.Click += (_, _) => CheckBsodDumps();
@@ -200,10 +205,12 @@ public class CheckTestForm : Form
             _btnCheckKeyboard.Location = new Point(16 + (w2 + 8) * 2, _btnCheckKeyboard.Location.Y);
             _btnCheckKeyboard.Width = mainPanel.Width - 16 - _btnCheckKeyboard.Location.X;
 
-            int w3 = (mainPanel.Width - 32 - 8) / 2;
+            int w3 = (mainPanel.Width - 32 - 16) / 3;
             _btnCheckCamera.Width = w3;
             _btnCheckAudio.Location = new Point(16 + w3 + 8, _btnCheckAudio.Location.Y);
-            _btnCheckAudio.Width = mainPanel.Width - 16 - _btnCheckAudio.Location.X;
+            _btnCheckAudio.Width = w3;
+            _btnCheckNetwork.Location = new Point(16 + (w3 + 8) * 2, _btnCheckNetwork.Location.Y);
+            _btnCheckNetwork.Width = mainPanel.Width - 16 - _btnCheckNetwork.Location.X;
         };
     }
 
@@ -227,12 +234,13 @@ public class CheckTestForm : Form
     private void SetInitialHelpText()
     {
         _rtbLog.Clear();
-        _rtbLog.AppendText("💡 Nút \"Check toàn diện\" kiểm tra pin + ổ cứng + tốc độ + quét bề mặt + nhiệt độ CPU/GPU,\n");
+        _rtbLog.AppendText("• Nút \"Chẩn đoán toàn diện\" kiểm tra pin + ổ cứng + tốc độ + quét bề mặt + nhiệt độ CPU/GPU,\n");
         _rtbLog.AppendText("    rồi tự xuất \"check-<tên thiết bị>.txt\" vào CÙNG THƯ MỤC với tool.\n\n");
-        _rtbLog.AppendText("💡 Nút \"Kiểm tra RAM\" mở cửa sổ riêng: đọc nhật ký lỗi bộ nhớ của máy + test ghi/đọc RAM thật\n");
+        _rtbLog.AppendText("• Nút \"Kiểm tra RAM\" mở cửa sổ riêng: đọc nhật ký lỗi bộ nhớ của máy + test ghi/đọc RAM thật\n");
         _rtbLog.AppendText("    (chạy được cả trong WinPE - không phải boot ra MemTest86 nữa).\n\n");
-        _rtbLog.AppendText("💡 Nút \"Kiểm tra màn hình\" mở bài test toàn màn hình để phát hiện điểm chết, đốm sáng, hở sáng.\n");
-        _rtbLog.AppendText("💡 Nút \"Kiểm tra bàn phím\" hỗ trợ bấm thử tất cả các phím có trên máy tính.\n");
+        _rtbLog.AppendText("• Nút \"Kiểm tra màn hình\" mở bài test toàn màn hình để phát hiện điểm chết, đốm sáng, hở sáng.\n");
+        _rtbLog.AppendText("• Nút \"Kiểm tra bàn phím\" hỗ trợ bấm thử tất cả các phím có trên máy tính.\n");
+        _rtbLog.AppendText("• Nút \"Chẩn đoán Mạng\" chẩn đoán sâu: bóp băng thông đơn luồng, SSL/Antivirus can thiệp, Proxy, MTU.\n");
     }
 
     private void Log(string text)
@@ -318,18 +326,18 @@ public class CheckTestForm : Form
                 try { File.Delete(tempFile); } catch { }
 
                 reportLines.Add($"• Tốc độ đo được ổ C: Ghi ~{writeSpeed:N1} MB/s | Đọc ~{readSpeed:N1} MB/s");
-                Log($"   ✅ Tốc độ ổ C: Ghi ~{writeSpeed:N1} MB/s | Đọc ~{readSpeed:N1} MB/s");
+                Log($"   [OK] Tốc độ ổ C: Ghi ~{writeSpeed:N1} MB/s | Đọc ~{readSpeed:N1} MB/s");
             }
             catch (Exception ex)
             {
                 reportLines.Add($"• Tốc độ đo được: Lỗi benchmark ({ex.Message})");
-                Log($"   ⚠️ Lỗi benchmark tốc độ: {ex.Message}");
+                Log($"   [Cảnh báo] Lỗi benchmark tốc độ: {ex.Message}");
             }
 
             // 5. Surface & Bad Sector check
             Log("5/5 Đang quét sơ bộ bề mặt ổ đĩa...");
             reportLines.Add("• Quét bề mặt: Đĩa hoạt động tốt, không có Bad Sector được ghi nhận bởi hệ điều hành.");
-            Log("   ✅ Bề mặt ổ cứng: Tốt (Healthy)");
+            Log("   [OK] Bề mặt ổ cứng: Tốt (Healthy)");
 
             // Summary
             reportLines.Add(new string('-', 60));
@@ -341,7 +349,7 @@ public class CheckTestForm : Form
             {
                 File.WriteAllLines(exportPath, reportLines);
                 Log($"==========================================================================");
-                Log($"✅ ĐÃ XUẤT BÁO CÁO THÀNH CÔNG: {exportPath}");
+                Log($"[OK] ĐÃ XUẤT BÁO CÁO THÀNH CÔNG: {exportPath}");
                 Log($"==========================================================================");
             }
             catch (Exception ex)
@@ -350,7 +358,7 @@ public class CheckTestForm : Form
             }
         });
 
-        _lblStatus.Text = "✅ Hoàn tất kiểm tra toàn diện! Báo cáo đã xuất ra file.";
+        _lblStatus.Text = "[Hoàn tất] Kiểm tra toàn diện thành công! Báo cáo đã xuất ra file.";
         _btnCheckAll.Enabled = true;
 
         string finalFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"check-{Environment.MachineName}.txt");
@@ -396,7 +404,7 @@ public class CheckTestForm : Form
 
             if (File.Exists(reportPath))
             {
-                Log($"✅ Đã tạo Windows Battery Report chi tiết tại: {reportPath}");
+                Log($"[OK] Đã tạo Windows Battery Report chi tiết tại: {reportPath}");
                 var res = MessageBox.Show(
                     $"Đã tạo báo cáo pin Windows Battery Report chính thức!\n\nĐường dẫn: {reportPath}\n\nBạn có muốn mở xem chi tiết các chu kỳ sạc và độ chai pin trong trình duyệt không?",
                     "Thông tin pin",
@@ -453,7 +461,7 @@ public class CheckTestForm : Form
         try
         {
             Process.Start(new ProcessStartInfo("microsoft.windows.camera:") { UseShellExecute = true });
-            Log("✅ Đã mở ứng dụng Camera Windows để bạn kiểm tra trực quan hình ảnh và ống kính.");
+            Log("[OK] Đã mở ứng dụng Camera Windows để bạn kiểm tra trực quan hình ảnh và ống kính.");
         }
         catch
         {
@@ -490,12 +498,33 @@ public class CheckTestForm : Form
             {
                 Process.Start(new ProcessStartInfo("ms-settings:sound") { UseShellExecute = true });
             }
-            Log("✅ Đã kích hoạt công cụ chẩn đoán âm thanh.");
+            Log("[OK] Đã kích hoạt công cụ chẩn đoán âm thanh.");
         }
         catch (Exception ex)
         {
             Log($"[Lỗi kiểm tra âm thanh]: {ex.Message}");
         }
+    }
+
+    #endregion
+
+    #region Action: Chẩn đoán Mạng
+
+    private void OpenNetworkDiagnostic()
+    {
+        Log("Mở giao diện Chẩn đoán mạng chuyên sâu (Vì sao mạng mạnh mà tải vẫn chậm?)...");
+        try
+        {
+            using var diagForm = new NetworkDiagnosticForm();
+            ThemeHelper.ApplyTheme(diagForm);
+            diagForm.ShowDialog(this);
+        }
+        catch (Exception ex)
+        {
+            Log($"[Lỗi mở Chẩn đoán mạng]: {ex.Message}");
+            MessageBox.Show($"Không thể mở giao diện Chẩn đoán mạng:\n\n{ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        Log("Đã đóng giao diện Chẩn đoán mạng.");
     }
 
     #endregion
@@ -527,7 +556,7 @@ public class CheckTestForm : Form
             dumpFound = files.Length;
             if (dumpFound > 0)
             {
-                Log($"⚠️ Phát hiện {dumpFound} file dump sự cố trong thư mục {minidumpDir}:");
+                Log($"[Cảnh báo] Phát hiện {dumpFound} file dump sự cố trong thư mục {minidumpDir}:");
                 foreach (var f in files.OrderByDescending(x => File.GetLastWriteTime(x)).Take(8))
                 {
                     var fi = new FileInfo(f);
@@ -545,7 +574,7 @@ public class CheckTestForm : Form
 
         if (dumpFound == 0)
         {
-            Log("✅ Tuyệt vời! Không phát hiện file dump sự cố màn hình xanh nào (Máy tính sạch lỗi BSOD).");
+            Log("[OK] Tuyệt vời! Không phát hiện file dump sự cố màn hình xanh nào (Máy tính sạch lỗi BSOD).");
             MessageBox.Show("Hệ thống hoàn toàn sạch lỗi!\n\nKhông có file ghi nhận sự cố Màn hình xanh (BSOD) nào trong thư mục Minidump.", "Không có BSOD", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         else
@@ -619,11 +648,11 @@ public class CheckTestForm : Form
             if (next == 3)
             {
                 key.SetValue("MinidumpsCount", 50, RegistryValueKind.DWord);
-                Log("✅ Đã BẬT tính năng tự động lưu Small Memory Dump (Minidump) khi xảy ra màn hình xanh.");
+                Log("[OK] Đã BẬT tính năng tự động lưu Small Memory Dump (Minidump) khi xảy ra màn hình xanh.");
             }
             else
             {
-                Log("✅ Đã TẮT tính năng lưu dump khi màn hình xanh.");
+                Log("[OK] Đã TẮT tính năng lưu dump khi màn hình xanh.");
             }
 
             RefreshDumpStatus();

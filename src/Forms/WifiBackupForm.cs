@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Text;
@@ -45,7 +45,7 @@ public class WifiBackupForm : Form
 
     private void InitializeComponents()
     {
-        Text = "📡 Quản Lý, Sao Lưu & Khôi Phục Hồ Sơ WiFi";
+        Text = "Quản Lý, Sao Lưu & Khôi Phục Hồ Sơ Wi-Fi (Wi-Fi Profiles Manager)";
         Size = new Size(880, 640);
         MinimumSize = new Size(800, 560);
         StartPosition = FormStartPosition.CenterParent;
@@ -180,7 +180,7 @@ public class WifiBackupForm : Form
         // Row 1: Thư mục sao lưu
         var lblPath = new Label
         {
-            Text = "📁 Thư mục lưu trữ:",
+            Text = "Thư mục lưu trữ:",
             Font = new Font("Segoe UI", 9f, FontStyle.Bold),
             ForeColor = _textHeading,
             Location = new Point(12, 12),
@@ -227,7 +227,7 @@ public class WifiBackupForm : Form
 
         var btnOpenDir = new Button
         {
-            Text = "📂 Mở",
+            Text = "Mở thư mục",
             Location = new Point(734, 11),
             Size = new Size(60, 27),
             BackColor = _btnBg,
@@ -258,7 +258,7 @@ public class WifiBackupForm : Form
         // Row 2: Search & Filter
         var lblSearch = new Label
         {
-            Text = "🔍 Tìm kiếm SSID:",
+            Text = "Tìm kiếm SSID:",
             Font = new Font("Segoe UI", 9f),
             ForeColor = _textLabel,
             Location = new Point(12, 48),
@@ -278,7 +278,7 @@ public class WifiBackupForm : Form
 
         _chkShowPasswords = new CheckBox
         {
-            Text = "👁️ Hiện mật khẩu",
+            Text = "Hiện mật khẩu",
             Font = new Font("Segoe UI", 9f),
             ForeColor = _textHeading,
             Checked = true,
@@ -291,7 +291,7 @@ public class WifiBackupForm : Form
 
         var btnRefresh = new Button
         {
-            Text = "🔄 Quét lại",
+            Text = "Quét lại",
             Location = new Point(618, 46),
             Size = new Size(110, 27),
             BackColor = _btnBg,
@@ -399,7 +399,7 @@ public class WifiBackupForm : Form
         {
             Name = "ColCopy",
             HeaderText = "Thao tác",
-            Text = "📋 Copy MK",
+            Text = "Sao chép MK",
             UseColumnTextForButtonValue = true,
             Width = 100,
             FlatStyle = FlatStyle.Flat
@@ -426,14 +426,14 @@ public class WifiBackupForm : Form
 
         // Context Menu
         var ctx = new ContextMenuStrip();
-        var menuCopyPass = ctx.Items.Add("📋 Sao chép mật khẩu");
+        var menuCopyPass = ctx.Items.Add("Sao chép mật khẩu");
         menuCopyPass.Click += (_, _) =>
         {
             if (_dgvProfiles.CurrentRow != null)
                 CopyRowPassword(_dgvProfiles.CurrentRow.Index);
         };
 
-        var menuCopySsid = ctx.Items.Add("📝 Sao chép Tên WiFi (SSID)");
+        var menuCopySsid = ctx.Items.Add("Sao chép Tên Wi-Fi (SSID)");
         menuCopySsid.Click += (_, _) =>
         {
             if (_dgvProfiles.CurrentRow != null)
@@ -444,7 +444,7 @@ public class WifiBackupForm : Form
             }
         };
 
-        var menuCopyBoth = ctx.Items.Add("📄 Sao chép cả Tên & Mật khẩu");
+        var menuCopyBoth = ctx.Items.Add("Sao chép cả Tên & Mật khẩu");
         menuCopyBoth.Click += (_, _) =>
         {
             if (_dgvProfiles.CurrentRow != null)
@@ -458,7 +458,7 @@ public class WifiBackupForm : Form
 
         ctx.Items.Add(new ToolStripSeparator());
 
-        var menuExportOne = ctx.Items.Add("💾 Xuất file XML riêng cho mạng này");
+        var menuExportOne = ctx.Items.Add("Xuất file XML riêng cho mạng này");
         menuExportOne.Click += (_, _) =>
         {
             if (_dgvProfiles.CurrentRow != null)
@@ -484,7 +484,7 @@ public class WifiBackupForm : Form
 
         var btnBackupAll = new Button
         {
-            Text = "💾 Sao Lưu Toàn Bộ WiFi (XML + Text)",
+            Text = "Sao lưu toàn bộ Wi-Fi (XML + Text)",
             Location = new Point(0, 10),
             Size = new Size(250, 38),
             BackColor = _primaryBlue,
@@ -499,7 +499,7 @@ public class WifiBackupForm : Form
 
         var btnRestore = new Button
         {
-            Text = "📥 Khôi Phục WiFi Từ File XML",
+            Text = "Khôi phục Wi-Fi từ file XML",
             Location = new Point(258, 10),
             Size = new Size(220, 38),
             BackColor = _successGreen,
@@ -514,7 +514,7 @@ public class WifiBackupForm : Form
 
         var btnCopyAll = new Button
         {
-            Text = "📋 Sao Chép Toàn Bộ Mật Khẩu",
+            Text = "Sao chép toàn bộ danh sách mật khẩu",
             Location = new Point(486, 10),
             Size = new Size(210, 38),
             BackColor = _btnBg,
@@ -566,7 +566,7 @@ public class WifiBackupForm : Form
 
         _lblStatus = new Label
         {
-            Text = "💡 Mẹo: Nhấn đúp chuột vào bất kỳ hàng nào để sao chép nhanh mật khẩu.",
+            Text = "Ghi chú: Nhấn đúp chuột vào bất kỳ hàng nào để sao chép nhanh mật khẩu.",
             Font = new Font("Segoe UI", 8.5f),
             ForeColor = _textLabel,
             Dock = DockStyle.Left,
@@ -662,7 +662,7 @@ public class WifiBackupForm : Form
         if (!string.IsNullOrEmpty(pass))
         {
             Clipboard.SetText(pass);
-            SetStatus($"✅ Đã sao chép mật khẩu của WiFi \"{ssid}\" vào Clipboard!");
+            SetStatus($"[OK] Đã sao chép mật khẩu của WiFi \"{ssid}\" vào Clipboard!");
         }
     }
 
@@ -686,7 +686,7 @@ public class WifiBackupForm : Form
         }
 
         Clipboard.SetText(sb.ToString());
-        SetStatus($"✅ Đã sao chép {_allProfiles.Count} mật khẩu WiFi vào Clipboard!");
+        SetStatus($"[OK] Đã sao chép {_allProfiles.Count} mật khẩu WiFi vào Clipboard!");
         MessageBox.Show($"Đã sao chép danh sách {_allProfiles.Count} hồ sơ WiFi kèm mật khẩu vào Clipboard thành công!", "Đã Sao Chép", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -714,7 +714,7 @@ public class WifiBackupForm : Form
             }
         });
 
-        SetStatus($"✅ Hoàn tất sao lưu! Đã xuất {exportedCount} file cấu hình WiFi vào {targetFolder}", false);
+        SetStatus($"[Hoàn tất] Đã xuất Đã xuất {exportedCount} file cấu hình WiFi vào {targetFolder}", false);
 
         var res = MessageBox.Show(
             $"Đã sao lưu thành công {exportedCount} hồ sơ WiFi vào thư mục:\n{targetFolder}\n\n(Bao gồm các file .xml cấu hình và file DanhSach_MatKhau_WiFi.txt).\n\nBạn có muốn mở thư mục sao lưu ngay bây giờ không?",
@@ -753,7 +753,7 @@ public class WifiBackupForm : Form
             using var proc = Process.Start(psi)!;
             proc.WaitForExit();
 
-            SetStatus($"✅ Đã xuất riêng cấu hình WiFi \"{profileName}\" vào {targetFolder}");
+            SetStatus($"[Hoàn tất] Đã xuất riêng cấu hình WiFi \"{profileName}\" vào {targetFolder}");
             MessageBox.Show($"Đã xuất cấu hình mạng \"{profileName}\" thành công vào thư mục:\n{targetFolder}", "Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
@@ -789,7 +789,7 @@ public class WifiBackupForm : Form
         });
 
         LoadWifiProfiles();
-        SetStatus($"✅ Đã khôi phục thành công {count} hồ sơ WiFi!", false);
+        SetStatus($"[Hoàn tất] Đã khôi phục thành công {count} hồ sơ WiFi!", false);
 
         MessageBox.Show($"Đã khôi phục thành công {count} hồ sơ WiFi vào Windows!", "Khôi Phục Thành Công", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }

@@ -10,14 +10,16 @@
     <ApplicationIcon>Resources\app.ico</ApplicationIcon>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     
-    <!-- Assembly Metadata for Ernastie -->
-    <Title>Ernastie Support Tool</Title>
-    <Product>Ernastie - Cong cu cai dat va bao tri Windows</Product>
-    <Company>Ernastie</Company>
-    <Description>Ernastie - Cong cu ho tro IT, cai dat va bao tri Windows / WinPE (Full Features Unlocked)</Description>
-    <Version>1.0.1</Version>
-    <FileVersion>1.0.1.0</FileVersion>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <AssemblyName>E-TOOLBOX</AssemblyName>
+    
+    <!-- Assembly Metadata for E-TOOLBOX -->
+    <Title>E-TOOLBOX</Title>
+    <Product>E-TOOLBOX - Cong cu cai dat va bao tri Windows</Product>
+    <Company>E-TOOLBOX</Company>
+    <Description>E-TOOLBOX - Cong cu ho tro IT, cai dat va bao tri Windows / WinPE (Full Features Unlocked)</Description>
+    <Version>1.0.2</Version>
+    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using Ernastie.Services;
 
@@ -70,7 +70,7 @@ public class WindowsConfigForm : Form
 
     private void InitializeComponents()
     {
-        Text = "⚙️ Trình cấu hình Windows";
+        Text = "Trình Cấu Hình & Tinh Chỉnh Windows (Windows Configuration & Tweaks)";
         Size = new Size(1160, 920);
         MinimumSize = new Size(1040, 800);
         StartPosition = FormStartPosition.CenterScreen;
@@ -156,7 +156,7 @@ public class WindowsConfigForm : Form
 
         var lblTitle = new Label
         {
-            Text = "🔒  Bảo mật & Tường lửa",
+            Text = "Bảo mật & Tường lửa (Security & Firewall)",
             Font = new Font("Segoe UI", 10.25f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Top,
@@ -206,7 +206,7 @@ public class WindowsConfigForm : Form
         btnDefault.Dock = DockStyle.Fill;
         btnDefault.Margin = new Padding(0, 0, 4, 0);
 
-        var btnReload = CreateStyledButton("🔄 Đọc lại", () =>
+        var btnReload = CreateStyledButton("Đọc lại", () =>
         {
             LoadSecuritySettings();
             Log("Đã nạp lại trạng thái Bảo mật & Tường lửa từ hệ thống.");
@@ -327,7 +327,7 @@ public class WindowsConfigForm : Form
 
         var lblTitle = new Label
         {
-            Text = "⚡  Thiết lập nhanh",
+            Text = "Thiết lập nhanh (Quick Settings)",
             Font = new Font("Segoe UI", 10.25f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Top,
@@ -350,7 +350,7 @@ public class WindowsConfigForm : Form
         pnlClockRadios.Controls.Add(_rbTime12);
         pnlClockRadios.Controls.Add(_rbTime24);
 
-        var lblClock = new Label { Text = "🕐 Giờ hệ thống:", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 9.25f, FontStyle.Bold), ForeColor = _textHeading };
+        var lblClock = new Label { Text = "Định dạng giờ hệ thống:", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 9.25f, FontStyle.Bold), ForeColor = _textHeading };
         pnlClockRow.Controls.Add(lblClock);
         pnlClockRow.Controls.Add(pnlClockRadios);
 
@@ -375,7 +375,7 @@ public class WindowsConfigForm : Form
 
         // Item 4: Comma decimal & Show Hidden
         var pnlCommaRow = new Panel { Dock = DockStyle.Top, Height = 34, BackColor = Color.Transparent, Padding = new Padding(0, 2, 0, 2) };
-        var btnShowHidden = CreateStyledButton("👁️ Hiện file ẩn", () => _service.ToggleShowHiddenFiles(Log));
+        var btnShowHidden = CreateStyledButton("Hiện / Ẩn file ẩn", () => _service.ToggleShowHiddenFiles(Log));
         btnShowHidden.Dock = DockStyle.Right;
         btnShowHidden.Width = 150;
 
@@ -435,7 +435,7 @@ public class WindowsConfigForm : Form
         };
 
         // Item 7: Hibernate Button
-        _btnHibernate = CreateStyledButton("🚫 Tắt ngủ đông", () =>
+        _btnHibernate = CreateStyledButton("Tắt ngủ đông", () =>
         {
             var (isEnabled, _) = _service.GetHibernateInfo();
             _service.SetHibernate(!isEnabled, Log);
@@ -457,7 +457,7 @@ public class WindowsConfigForm : Form
         tblPower.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 64f));
         tblPower.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 36f));
 
-        var btnPower = CreateStyledButton("💤 Ngủ / Màn hình / Power mode", () => _service.OpenPowerOptions());
+        var btnPower = CreateStyledButton("Chế độ nguồn & Màn hình", () => _service.OpenPowerOptions());
         btnPower.Dock = DockStyle.Fill;
         btnPower.Margin = new Padding(0, 0, 4, 0);
 
@@ -507,7 +507,7 @@ public class WindowsConfigForm : Form
 
         var lblTitle = new Label
         {
-            Text = "👤  Quản lý User (local)",
+            Text = "Quản lý người dùng (Local Users)",
             Font = new Font("Segoe UI", 10.25f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Left,
@@ -662,7 +662,7 @@ public class WindowsConfigForm : Form
 
         var lblLog = new Label
         {
-            Text = "📋  Nhật ký",
+            Text = "Nhật ký thực thi",
             Font = new Font("Segoe UI", 9.75f, FontStyle.Bold),
             ForeColor = _textHeading,
             Dock = DockStyle.Left,
@@ -670,7 +670,7 @@ public class WindowsConfigForm : Form
             TextAlign = ContentAlignment.MiddleLeft
         };
 
-        var btnClearLog = CreateStyledButton("🗑️ Xoá log", () => _rtbLog.Clear());
+        var btnClearLog = CreateStyledButton("Xóa log", () => _rtbLog.Clear());
         btnClearLog.Dock = DockStyle.Right;
         btnClearLog.Width = 95;
 
@@ -699,13 +699,13 @@ public class WindowsConfigForm : Form
             AutoSize = true
         };
 
-        var btnNetwork = CreateStyledButton("🌐 Thiết lập mạng", () => _service.OpenNetworkSettings());
+        var btnNetwork = CreateStyledButton("Thiết lập mạng", () => _service.OpenNetworkSettings());
         btnNetwork.Size = new Size(160, 32);
         btnNetwork.Margin = new Padding(0, 0, 16, 0);
 
         _chkDomain = new CheckBox
         {
-            Text = "🏢 Domain (bỏ tick = Workgroup)",
+            Text = "Gia nhập Domain (Bỏ chọn = Workgroup)",
             AutoSize = true,
             Font = new Font("Segoe UI", 9f),
             ForeColor = _textNormal,
@@ -839,7 +839,7 @@ public class WindowsConfigForm : Form
         _lblWorkgroupInfo.Text = isDomain ? $"Hiện tại: Domain {wg}" : $"Hiện tại: Workgroup {wg}";
 
         _lblStatus.Text = "Trạng thái: Sẵn sàng.";
-        Log("✅ Nạp hoàn tất trạng thái trình cấu hình Windows!");
+        Log("[OK] Nạp hoàn tất trạng thái trình cấu hình Windows!");
     }
 
     private void LoadSecuritySettings()
@@ -879,7 +879,7 @@ public class WindowsConfigForm : Form
         UpdateLabelColor(_lblFirewall, _rbFirewallOn.Checked);
         UpdateLabelColor(_lblSecAlerts, _rbSecAlertsOn.Checked);
 
-        Log("✅ Đã áp dụng các thiết lập Bảo mật & Tường lửa thành công!");
+        Log("[OK] Đã áp dụng các thiết lập Bảo mật & Tường lửa thành công!");
         MessageBox.Show("Đã lưu các thiết lập Bảo mật & Tường lửa!", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
     }
 
@@ -895,12 +895,12 @@ public class WindowsConfigForm : Form
         var (isEnabled, sizeGb) = _service.GetHibernateInfo();
         if (isEnabled)
         {
-            _btnHibernate.Text = $"🚫 Tắt ngủ đông - đang chiếm {sizeGb:N2} GB";
+            _btnHibernate.Text = $"Tắt ngủ đông - đang chiếm {sizeGb:N2} GB";
             _btnHibernate.ForeColor = Color.FromArgb(185, 28, 28);
         }
         else
         {
-            _btnHibernate.Text = "⚡ Bật ngủ đông (Hibernate)";
+            _btnHibernate.Text = "Bật ngủ đông (Hibernate)";
             _btnHibernate.ForeColor = _textHeading;
         }
     }
